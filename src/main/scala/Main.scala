@@ -1,3 +1,5 @@
+package peakid
+
 import org.http4s.server.blaze.BlazeBuilder
 
 object Main {
