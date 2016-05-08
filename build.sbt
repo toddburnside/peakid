@@ -8,6 +8,7 @@ val doobieVersion = "0.3.0-SNAPSHOT"
 
 // Only necessary for SNAPSHOT releases
 resolvers += Resolver.sonatypeRepo("snapshots")
+resolvers += Resolver.bintrayRepo("oncue", "releases")
 
 libraryDependencies ++= Seq(
   "org.http4s" %% "http4s-dsl" % http4sVersion,
@@ -23,7 +24,9 @@ libraryDependencies ++= Seq(
   "org.tpolecat" %% "doobie-core"               % doobieVersion,
   "org.tpolecat" %% "doobie-contrib-postgresql" % doobieVersion,
   "org.tpolecat" %% "doobie-contrib-hikari"     % doobieVersion,
-  "org.tpolecat" %% "doobie-contrib-specs2"     % doobieVersion
+  "org.tpolecat" %% "doobie-contrib-specs2"     % doobieVersion,
+
+  "oncue.knobs" %% "core" % "3.6.1a"
 
   //"com.lihaoyi" % "ammonite-repl" % "0.5.7" % "test" cross CrossVersion.full
 )
