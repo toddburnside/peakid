@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS peaks (
   state CHARACTER(2) NOT NULL,
   county VARCHAR NOT NULL,
   map VARCHAR NOT NULL,
-  elevation SMALLINT NOT NULL,
+  elevation INTEGER NOT NULL,
   location GEOMETRY(POINT, 4326) NOT NULL
 );
 
