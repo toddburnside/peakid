@@ -28,7 +28,7 @@ object PeakServiceSpec extends Specification with TaskMatchers with ResultMatche
     "Get should be successful" >> {
       implicit val x = Task.now(peakView.some.right[Throwable])
       val request = Request(Method.GET, Uri(path = "/peaks/3"))
-      val responseTask = service =<< Task.now(request)
+      val responseTask = service.run(request)
       val response = responseTask.unsafePerformSync
       response.status must_== Status.Ok
     }
