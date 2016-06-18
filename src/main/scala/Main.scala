@@ -2,12 +2,16 @@ package peakid
 
 import java.io.File
 
-import knobs.{Required, FileResource}
-import org.http4s.server.ServerApp
+import knobs.{FileResource, Required}
+import org.http4s._
+import org.http4s.dsl._
+import org.http4s.server.{Router, ServerApp}
 import org.http4s.server.blaze.BlazeBuilder
-import services.PeakServiceDb
-import scalaz.concurrent.Task
+import services.{PeakServiceDb, ProfileServiceGoogle}
 
+import scalaz.concurrent.Task
+import scalaz._
+import Scalaz._
 import doobie.imports._
 
 object Main extends ServerApp {
@@ -20,8 +24,9 @@ object Main extends ServerApp {
       user = cfg.require[String]("db.user")
       pass = cfg.require[String]("db.pass")
       xa = DriverManagerTransactor[Task]("org.postgresql.Driver", url, user, pass)
+      service = Router("/peaks" -> PeakServiceDb(xa).service,  "/profiles" -> ProfileServiceGoogle(0).service)
       svr <- BlazeBuilder.bindHttp(8080)
-      .mountService(PeakServiceDb(xa).service, "/api")
+      .mountService(service, "/api")
       .start
     } yield svr
   }

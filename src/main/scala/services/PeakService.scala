@@ -22,12 +22,12 @@ trait PeakService {
     e.fold(l => InternalServerError(l.getMessage), r => f(r))
 
   def service = HttpService {
-    case GET -> Root / "peaks" / IntVar(id) => for {
+    case GET -> Root / IntVar(id) => for {
       opv <- findOne(id)
       result <- eitherToResponse(opv)(_.fold(NotFound())(Ok(_)))
     } yield result
 
-    case req@POST -> Root / "peaks" =>
+    case req@POST -> Root =>
       req.decode[Peak] { p => for {
         peakView <- insert(p)
         result <- eitherToResponse(peakView)(Ok(_))

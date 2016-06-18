@@ -19,5 +19,7 @@ project/plugins/project/
 .worksheet
 
 .idea/
+env.src
 
 
+peakid.cfg

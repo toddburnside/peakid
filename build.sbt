@@ -47,8 +47,8 @@ scalacOptions ++= Seq(
   "-Ywarn-dead-code",        // N.B. doesn't work well with the ??? hole
   "-Ywarn-numeric-widen",
   "-Ywarn-value-discard",
-  "-Xfuture",
-  "-Ywarn-unused-import"     // 2.11 only
+  "-Xfuture"
+//  "-Ywarn-unused-import"     // 2.11 only
 )
 
 scalacOptions in Test ++= Seq("-Yrangepos")
