@@ -23,8 +23,11 @@ object Main extends ServerApp {
       url = cfg.require[String]("db.url")
       user = cfg.require[String]("db.user")
       pass = cfg.require[String]("db.pass")
+      googleKey = cfg.require[String]("googleElevation.key")
       xa = DriverManagerTransactor[Task]("org.postgresql.Driver", url, user, pass)
-      service = Router("/peaks" -> PeakServiceDb(xa).service,  "/profiles" -> ProfileServiceGoogle(0).service)
+      service = Router(
+        "/peaks" -> PeakServiceDb(xa).service,
+        "/profiles" -> ProfileServiceGoogle(googleKey).service)
       svr <- BlazeBuilder.bindHttp(8080)
       .mountService(service, "/api")
       .start
