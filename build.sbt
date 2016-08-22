@@ -1,9 +1,11 @@
 scalaVersion := "2.11.8"
 
-val http4sVersion = "0.14.0a-SNAPSHOT"
+val http4sVersion = "0.14.2a"
 val circeVersion = "0.4.1"
-val doobieVersion = "0.3.0-SNAPSHOT"
+val doobieVersion = "0.3.0"
 val specs2Version = "3.7.1"
+
+addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
 
 // Only necessary for SNAPSHOT releases
 resolvers += Resolver.sonatypeRepo("snapshots")
@@ -28,8 +30,9 @@ libraryDependencies ++= Seq(
   "oncue.knobs" %% "core" % "3.6.1a",
 
   "org.specs2" %% "specs2-core" % specs2Version % "test",
-  "org.specs2" %% "specs2-matcher-extra" % specs2Version % "test"
+  "org.specs2" %% "specs2-matcher-extra" % specs2Version % "test",
 
+  "com.github.mpilquist" %% "simulacrum" % "0.8.0"
   //"com.lihaoyi" % "ammonite-repl" % "0.5.7" % "test" cross CrossVersion.full
 )
 
