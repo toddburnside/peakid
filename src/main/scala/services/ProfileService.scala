@@ -27,7 +27,7 @@ case class ProfileServiceGoogle(key: String) extends ProfileService {
     // this fashion. Just for testing the concept.
     val uri = s"https://maps.googleapis.com/maps/api/elevation/json?locations=$lat,$lon&key=$key"
     val client = PooledHttp1Client()
-    val response = client.getAs[GoogleElevationResponse](uri)
+    val response = client.expect[GoogleElevationResponse](uri)
 //    s"Received: ($lon, $lat)"
     response
   }
