@@ -5,7 +5,7 @@ trait ElevatedGeography[A] extends FlatGeography[A] {
   def lat: Double
   def elevation: Int // in meters
 
-  def toHorizon: Double = ElevatedGeography.toHorizon(this)
+  def toHorizon: Double = ElevatedGeography.toHorizon(this.elevation)
 
   def isVisibleFrom[B](b: ElevatedGeography[B]): Boolean =
     ElevatedGeography.isVisibleFrom(this, b)
@@ -21,11 +21,11 @@ object ElevatedGeography {
   // This is way less significant than the deviation from a sphere and
   // the refraction.
   // result is in km
-  def toHorizon[A](a: ElevatedGeography[A]): Double = {
+  def toHorizon[A](elevation: Int): Double = {
     // For geometric calculation without refraction, the constant below would
     // be 3.57. The 3.86 adds an extra 8% for refraction at standard atmospheric
     // conditions. Temperature gradients, etc., can greatly affect this.
-    3.86 * math.sqrt(a.elevation.toDouble)
+    3.86 * math.sqrt(elevation.toDouble)
   }
 
   // If the distance to the horizon for each of the points overlaps, then one

@@ -9,7 +9,7 @@ object ElevatedGeographySpec extends Specification with ResultMatchers {
 
   "Test ElevationGeography" >> {
     "Distance to horizon at 7000m" >> {
-      peak1.toHorizon() must beCloseTo(323.0 +/- 0.1)
+      peak1.toHorizon must beCloseTo(323.0 +/- 0.1)
     }
   }
 }

@@ -7,12 +7,15 @@ import org.http4s._
 import org.http4s.dsl._
 import org.http4s.server.{Router, ServerApp}
 import org.http4s.server.blaze.BlazeBuilder
-import services.{PeakServiceDb, ProfileServiceGoogle}
+import services.{PeakService, ProfileService}
 
 import scalaz.concurrent.Task
 import scalaz._
 import Scalaz._
 import doobie.imports._
+import elevation.GoogleElevationProvider
+import org.http4s.client.blaze.PooledHttp1Client
+import repositories.PeakRepositoryDb
 
 object Main extends ServerApp {
 
@@ -25,9 +28,12 @@ object Main extends ServerApp {
       pass = cfg.require[String]("db.pass")
       googleKey = cfg.require[String]("googleElevation.key")
       xa = DriverManagerTransactor[Task]("org.postgresql.Driver", url, user, pass)
+      peakRepo = new PeakRepositoryDb(xa)
+      client = PooledHttp1Client()
+      elevProvider = new GoogleElevationProvider(googleKey, client)
       service = Router(
-        "/peaks" -> PeakServiceDb(xa).service,
-        "/profiles" -> ProfileServiceGoogle(googleKey).service)
+        "/peaks" -> new PeakService(peakRepo, elevProvider).service,
+        "/profiles" -> new ProfileService(elevProvider).service)
       svr <- BlazeBuilder.bindHttp(8080)
       .mountService(service, "/api")
       .start

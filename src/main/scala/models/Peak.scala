@@ -10,13 +10,7 @@ case class Peak(name: String, usgsid: Int, state: String, county: String,
 case class PeakView(id: PeakId, peak: Peak)
 
 object Peak {
-  // TODO: Move these elsewhere?
-  implicit def flatGeographyPeak(a: Peak): FlatGeography[Peak] =
-    new FlatGeography[Peak] {
-      override val lat: Double = a.location.lat
-      override val lon: Double = a.location.lon
-    }
-
+  // TODO: Move this elsewhere?
   implicit def elevationGeographyPeak(a: Peak): ElevatedGeography[Peak] =
     new ElevatedGeography[Peak] {
       override val lat: Double = a.location.lat
