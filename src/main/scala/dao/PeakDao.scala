@@ -1,24 +1,24 @@
 package dao
 
 import doobie.imports._
-import models.{PeakView, Peak}
+import models.PeakBase.{NewPeak, Peak}
 
 trait PeakDao {
   // TODO: Need to use POST GIS to limit the results
-  def findOneQuery(id: Int): Query0[PeakView] = //ConnectionIO[Throwable \/ Option[PeakView]] =
+  def findOneQuery(id: Int): Query0[Peak] = //ConnectionIO[Throwable \/ Option[PeakView]] =
     sql"""
          select id, name, usgsid, state, county, map, elevation, location
          from peaks
-         where id = $id""".query[PeakView]
+         where id = $id""".query[Peak]
 
-  def findQuery(minElev: Int): Query0[PeakView] =
+  def findQuery(minElev: Int): Query0[Peak] =
     sql"""
           select id, name, usgsid, state, county, map, elevation, location
           from peaks
-          where elevation > $minElev""".query[PeakView]
+          where elevation > $minElev""".query[Peak]
 
   // TODO: unique constraint for usgsid
-  def insertQuery(newPeak: Peak): Update0 = // ConnectionIO[Throwable \/ PeakView] =
+  def insertQuery(newPeak: NewPeak): Update0 = // ConnectionIO[Throwable \/ PeakView] =
     sql"""
     insert into peaks (name, usgsid, state, county, map, elevation, location)
     values (${newPeak.name}, ${newPeak.usgsid}, ${newPeak.state},

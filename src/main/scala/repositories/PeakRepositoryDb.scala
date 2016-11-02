@@ -2,7 +2,7 @@ package repositories
 
 import dao.PeakDao
 import doobie.imports._
-import models.{Peak, PeakView}
+import models.PeakBase.{Peak, NewPeak}
 
 import scalaz._
 import Scalaz._
@@ -21,9 +21,9 @@ class PeakRepositoryDb(val xa: Transactor[Task]) extends PeakRepository with Pea
       .process
       .transact(xa)
 
-  def insert(newPeak: Peak) =
+  def insert(newPeak: NewPeak) =
     insertQuery(newPeak)
-      .withUniqueGeneratedKeys[PeakView]("id", "name", "usgsid", "state", "county", "map", "elevation", "location")
+      .withUniqueGeneratedKeys[Peak]("id", "name", "usgsid", "state", "county", "map", "elevation", "location")
       .attempt
       .transact(xa)
 }

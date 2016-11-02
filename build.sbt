@@ -7,6 +7,8 @@ val specs2Version = "3.7.1"
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
 
+//addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.8.1")
+
 // Only necessary for SNAPSHOT releases
 resolvers += Resolver.sonatypeRepo("snapshots")
 resolvers += Resolver.bintrayRepo("oncue", "releases")

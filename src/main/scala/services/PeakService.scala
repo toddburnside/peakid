@@ -1,8 +1,9 @@
 package services
 
 import elevation.{ElevationInfo, ElevationProvider}
-import models.{Location3D, Peak}
+import models.Location3D
 import io.circe.generic.auto._
+import models.PeakBase.NewPeak
 import org.http4s._
 import org.http4s.dsl._
 import repositories.{PeakInfo, PeakRepository}
@@ -25,7 +26,7 @@ class PeakService(val peakRepo: PeakRepository, elevProvider: ElevationProvider)
     } yield result
 
     case req@POST -> Root =>
-      req.decode[Peak] { p => for {
+      req.decode[NewPeak] { p => for {
         peakView <- PeakInfo.insert(p).run(peakRepo)
         result <- eitherToResponse(peakView)(Ok(_))
       } yield result
