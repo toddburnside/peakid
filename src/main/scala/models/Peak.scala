@@ -16,8 +16,11 @@ object PeakBase {
   type NewPeak = PeakBase[Unit]
   type Peak = PeakBase[PeakId]
 
+  // A downside of the use of a Unit id is that circe can't seem to derive a generic decoder for the 'missing'
+  // property in the JSON. In fact, I even need to specify the types.
   implicit val decodeUser: Decoder[NewPeak] =
-    Decoder.forProduct7("name", "usgsid", "state", "county", "map", "elevation", "location")(PeakBase[Unit]((), _, _, _, _, _, _, _))
+    Decoder.forProduct7("name", "usgsid", "state", "county", "map", "elevation", "location")(
+      PeakBase[Unit]((), _: String, _: Int, _: String, _: String, _: String, _: Int, _: Location))
 
   // TODO: Move this elsewhere?
   implicit def elevationGeographyPeak[A](a: PeakBase[A]): ElevatedGeography[PeakBase[A]] =
