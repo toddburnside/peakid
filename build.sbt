@@ -34,8 +34,9 @@ libraryDependencies ++= Seq(
   "org.specs2" %% "specs2-core" % specs2Version % "test",
   "org.specs2" %% "specs2-matcher-extra" % specs2Version % "test",
 
-  "com.github.mpilquist" %% "simulacrum" % "0.8.0"
-  //"com.lihaoyi" % "ammonite-repl" % "0.5.7" % "test" cross CrossVersion.full
+  "com.github.mpilquist" %% "simulacrum" % "0.8.0",
+  "com.lihaoyi" % "ammonite" % "0.7.8" % "test" cross CrossVersion.full
+
 )
 
 scalacOptions ++= Seq(
@@ -58,4 +59,4 @@ scalacOptions ++= Seq(
 
 scalacOptions in Test ++= Seq("-Yrangepos")
 
-//initialCommands in (Test, console) := """ammonite.repl.Main.run("")"""
+initialCommands in (Test, console) := """ammonite.Main().run()"""

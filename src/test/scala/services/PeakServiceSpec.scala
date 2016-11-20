@@ -1,6 +1,7 @@
 package services
 
 import elevation.ElevationProvider
+import models.PeakBase.{NewPeak, Peak}
 import models._
 import org.http4s.{Method, Request, Status, Uri}
 import org.specs2.matcher.{ResultMatchers, TaskMatchers}
@@ -15,15 +16,15 @@ import scalaz.stream.Process
 // TODO: Thus far, this is only exploratory to see HOW to write tests on a service.
 // TODO: Now, I need to write some actual tests...
 trait PeakRepo extends PeakRepository {
-  val peak = Peak("Name", 1, "OR", "Lane", "themap", 1000, Location(1.1, 2.2))
-  val peakView = PeakView(PeakId(1), peak)
-  val somePV = peakView.some
+  val newPeak = new NewPeak((), "Name", 1, "OR", "Lane", "themap", 1000, Location(1.1, 2.2))
+  val peak = new Peak(1, "Name", 1, "OR", "Lane", "themap", 1000, Location(1.1, 2.2))
+  val somePV = peak.some
   val eSomePV = somePV.right[Throwable]
 
 
-  def find(minElev: Int): Process[Task, PeakView] = ???
+  def find(minElev: Int): Process[Task, Peak] = ???
   def findOne(id: Int) = Task.now(eSomePV)
-  def insert(newPeak: Peak) = Task.now(peakView.right)
+  def insert(newPeak: NewPeak) = Task.now(peak.right)
 }
 
 object PeakServiceSpec extends Specification with TaskMatchers with ResultMatchers {

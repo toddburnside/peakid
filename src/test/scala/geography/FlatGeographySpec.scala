@@ -1,6 +1,7 @@
 package geography
 
-import models.{Location, Peak}
+import models.Location
+import models.PeakBase.NewPeak
 import org.specs2.matcher.ResultMatchers
 import org.specs2.mutable.Specification
 
@@ -8,8 +9,8 @@ import org.specs2.mutable.Specification
 object FlatGeographySpec extends Specification with ResultMatchers {
   val loc1 = Location(-5.0, 50.0)
   val loc2 = Location(-3.0, 58.0)
-  val peak1 = Peak("Mountain", 1, "OR", "Clackamas", "Map", 7000, Location(-5.0, 50.0))
-  val peak2 = Peak("Mountain", 1, "OR", "Clackamas", "Map", 6000, Location(-3.0, 58.0))
+  val peak1 = new NewPeak((), "Mountain", 1, "OR", "Clackamas", "Map", 7000, Location(-5.0, 50.0))
+  val peak2 = new NewPeak((), "Mountain", 1, "OR", "Clackamas", "Map", 6000, Location(-3.0, 58.0))
   "Test FlatGeography" >> {
     "Test simple distance between Locations" >> {
      loc1.distanceTo(loc2) must beCloseTo(899.01 +/- 0.1)

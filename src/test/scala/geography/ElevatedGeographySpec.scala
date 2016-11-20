@@ -1,11 +1,12 @@
 package geography
 
-import models.{Location, Peak}
+import models.PeakBase.NewPeak
+import models.Location
 import org.specs2.matcher.ResultMatchers
 import org.specs2.mutable.Specification
 
 object ElevatedGeographySpec extends Specification with ResultMatchers {
-  val peak1 = Peak("name", 0, "OR", "Clackamas", "here", 7000, Location(0.0, 0.0))
+  val peak1 = new NewPeak((), "name", 0, "OR", "Clackamas", "here", 7000, Location(0.0, 0.0))
 
   "Test ElevationGeography" >> {
     "Distance to horizon at 7000m" >> {
