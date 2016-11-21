@@ -4,7 +4,7 @@ import doobie.imports._
 import models.PeakBase.{NewPeak, Peak}
 
 trait PeakDao {
-  // TODO: Need to use POST GIS to limit the results
+  // TODO: Limit the results on the server side using GIS stuff.
   def findOneQuery(id: Int): Query0[Peak] = //ConnectionIO[Throwable \/ Option[PeakView]] =
     sql"""
          select id, name, usgsid, state, county, map, elevation, location

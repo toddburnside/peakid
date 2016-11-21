@@ -15,7 +15,6 @@ class PeakRepositoryDb(val xa: Transactor[Task]) extends PeakRepository with Pea
       .attempt
       .transact(xa)
 
-  // TODO: How do I handle exceptions? apparently, I can't use attempt...
   def find(minElev: Int) =
     findQuery(minElev)
       .process
