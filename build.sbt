@@ -1,9 +1,9 @@
 scalaVersion := "2.11.8"
 
-val http4sVersion = "0.14.2a"
-val circeVersion = "0.4.1"
-val doobieVersion = "0.3.0"
-val specs2Version = "3.7.1"
+val http4sVersion = "0.15.3a"
+val circeVersion = "0.6.1"
+val doobieVersion = "0.4.1"
+val specs2Version = "3.8.8"
 
 addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
 
@@ -20,25 +20,27 @@ libraryDependencies ++= Seq(
   "org.http4s" %% "http4s-circe" % http4sVersion,
 
   // to enable logging in http4s
-  "ch.qos.logback" % "logback-classic" % "1.1.7",
+  "ch.qos.logback" % "logback-classic" % "1.2.1",
 
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
   "io.circe" %% "circe-parser" % circeVersion,
-  "io.circe" %% "circe-java8" % circeVersion,
+//  "io.circe" %% "circe-java8" % circeVersion,
 
   "org.tpolecat" %% "doobie-core"               % doobieVersion,
-  "org.tpolecat" %% "doobie-contrib-postgresql" % doobieVersion,
-  "org.tpolecat" %% "doobie-contrib-hikari"     % doobieVersion,
-  "org.tpolecat" %% "doobie-contrib-specs2"     % doobieVersion,
+  "org.tpolecat" %% "doobie-postgres"           % doobieVersion,
+//  "org.tpolecat" %% "doobie-contrib-hikari"     % doobieVersion,
+  "org.tpolecat" %% "doobie-specs2"             % doobieVersion,
+  "org.postgis" % "postgis-jdbc" % "1.3.3",
 
   "oncue.knobs" %% "core" % "3.6.1a",
 
   "org.specs2" %% "specs2-core" % specs2Version % "test",
   "org.specs2" %% "specs2-matcher-extra" % specs2Version % "test",
+  "org.specs2" %% "specs2-scalaz" % specs2Version % "test",
 
-  "com.github.mpilquist" %% "simulacrum" % "0.8.0",
-  "com.lihaoyi" % "ammonite" % "0.7.8" % "test" cross CrossVersion.full
+  "com.github.mpilquist" %% "simulacrum" % "0.10.0",
+  "com.lihaoyi" % "ammonite" % "0.8.2" % "test" cross CrossVersion.full
 
 )
 

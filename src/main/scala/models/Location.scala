@@ -1,7 +1,7 @@
 package models
 
-import doobie.imports.Meta
-import doobie.contrib.postgresql.pgtypes._
+import doobie.imports._
+import doobie.postgres.pgistypes.PointType
 import geography.FlatGeography
 import org.postgis.Point
 
