@@ -3,21 +3,20 @@ package repositories
 import models.PeakBase.{NewPeak, Peak}
 import models.{Location3D, VisiblePeak}
 
-import scalaz._
-import scalaz.concurrent.Task
-import scalaz.stream.Process
+import fs2.{Task, Stream}
+import cats.data._
 
 object PeakInfo {
-  def find(minElev: Int): Reader[PeakRepository, Process[Task, Peak]] =
+  def find(minElev: Int): Reader[PeakRepository, Stream[Task, Peak]] =
     Reader(_.find(minElev))
 
-  def findOne(id: Int): Reader[PeakRepository, Task[Throwable \/ Option[Peak]]] =
+  def findOne(id: Int): Reader[PeakRepository, Task[Throwable Either Option[Peak]]] =
     Reader(_.findOne(id))
 
-  def insert(newPeak: NewPeak): Reader[PeakRepository, Task[Throwable \/ Peak]] =
+  def insert(newPeak: NewPeak): Reader[PeakRepository, Task[Throwable Either Peak]] =
     Reader(_.insert(newPeak))
 
-  def findVisible(minElev: Int, loc: Location3D): Reader[PeakRepository, Task[Throwable \/Vector[VisiblePeak]]] =
+  def findVisible(minElev: Int, loc: Location3D): Reader[PeakRepository, Task[Throwable Either Vector[VisiblePeak]]] =
     // get a list of peaks from the server as a process, then filter them, then put into a Vector,
     // then handle exceptions by 'attempt'ing them into a disjunction.
     for {

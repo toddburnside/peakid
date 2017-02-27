@@ -5,7 +5,7 @@ import models.PeakBase.{NewPeak, Peak}
 
 trait PeakDao {
   // TODO: Limit the results on the server side using GIS stuff.
-  def findOneQuery(id: Int): Query0[Peak] = //ConnectionIO[Throwable \/ Option[PeakView]] =
+  def findOneQuery(id: Int): Query0[Peak] = 
     sql"""
          select id, name, usgsid, state, county, map, elevation, location
          from peaks

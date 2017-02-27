@@ -4,14 +4,12 @@ import elevation.ElevationProvider
 import models.PeakBase.{NewPeak, Peak}
 import models._
 import org.http4s.{Method, Request, Status, Uri}
-import org.specs2.matcher.{ResultMatchers, TaskMatchers}
+import org.specs2.matcher.ResultMatchers
 import org.specs2.mutable.Specification
 import repositories.PeakRepository
 
-import scalaz._
-import Scalaz._
-import scalaz.concurrent.Task
-import scalaz.stream.Process
+import fs2.{Stream, Task}
+import cats.implicits._
 
 // TODO: Thus far, this is only exploratory to see HOW to write tests on a service.
 // TODO: Now, I need to write some actual tests...

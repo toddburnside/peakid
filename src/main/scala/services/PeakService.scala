@@ -8,9 +8,9 @@ import org.http4s._
 import org.http4s.dsl._
 import repositories.{PeakInfo, PeakRepository}
 
-import scalaz.concurrent.Task
-import scalaz._
-import Scalaz._
+import fs2.Task
+import fs2.interop.cats._
+import cats.data._, cats.implicits._
 
 class PeakService(val peakRepo: PeakRepository, elevProvider: ElevationProvider) extends BaseService {
   def service = HttpService {
@@ -21,7 +21,7 @@ class PeakService(val peakRepo: PeakRepository, elevProvider: ElevationProvider)
       var peaksT: EitherT[Task, Throwable, Vector[VisiblePeak]] = for {
         // if the elevation was provided, convert to a Task[disjunction], else
         // if the elevation wasn't provided, go get it for the location.
-        elevation <- EitherT(optElev.map(e => Task.now(e.right)).getOrElse(ElevationInfo.getElevation(lon, lat).run(elevProvider)))
+        elevation <- EitherT(optElev.map(e => Task.now(e.asRight)).getOrElse(ElevationInfo.getElevation(lon, lat).run(elevProvider)))
 
         // the mininum elevation of the peaks to include in the result
         minElev = optMinElev.getOrElse(0)
@@ -30,7 +30,7 @@ class PeakService(val peakRepo: PeakRepository, elevProvider: ElevationProvider)
       } yield peaks
 
       // Extract the Task[\/] and convert to a response
-      peaksT.run.flatMap(p => eitherToResponse(p)(Ok(_)))
+      peaksT.value.flatMap(p => eitherToResponse(p)(Ok(_)))
     }
 
     // get an individual peak by id
