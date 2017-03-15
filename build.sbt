@@ -1,4 +1,4 @@
-scalaVersion := "2.11.8"
+scalaVersion := "2.12.1"
 
 val http4sVersion = "0.16.0-cats-SNAPSHOT"
 val circeVersion = "0.6.1"
