@@ -2,11 +2,12 @@ package repositories
 
 import dao.PeakDao
 import doobie.imports._
+
+import cats.implicits._
+import fs2.interop.cats._
 import models.PeakBase.{Peak, NewPeak}
 
-import scalaz._
-import Scalaz._
-import scalaz.concurrent.Task
+import fs2.Task
 
 class PeakRepositoryDb(val xa: Transactor[Task]) extends PeakRepository with PeakDao {
   def findOne(id: Int) =

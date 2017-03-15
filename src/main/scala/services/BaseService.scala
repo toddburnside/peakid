@@ -4,8 +4,7 @@ import io.circe.{Decoder, Encoder}
 import org.http4s.Response
 import org.http4s.dsl._
 
-import scalaz.\/
-import scalaz.concurrent.Task
+import fs2.Task
 
 trait BaseService {
   // implicit en/decoders for Circe
@@ -16,7 +15,7 @@ trait BaseService {
   // Takes an either with a throwable on the left and an A on the right.
   // If Left, return an InternalServiceError with the message, otherwise
   // uses the function passed it to create a response.
-  def eitherToResponse[A](e: Throwable \/ A)(f: A => Task[Response]): Task[Response] =
+  def eitherToResponse[A](e: Throwable Either A)(f: A => Task[Response]): Task[Response] =
     e.fold(l => InternalServerError(l.getMessage), r => f(r))
 
   // Matchers for query parameters.
