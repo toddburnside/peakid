@@ -8,7 +8,7 @@ import org.http4s._
 import org.http4s.dsl._
 import repositories.{PeakInfo, PeakRepository}
 
-import fs2.Task
+import fs2.{Stream, Task}
 import fs2.interop.cats._
 import cats.data._, cats.implicits._
 
@@ -18,15 +18,17 @@ class PeakService(val peakRepo: PeakRepository, elevProvider: ElevationProvider)
     case GET -> Root :? LonMatcher(lon) +& LatMatcher(lat)
       +& OptElevMatcher(optElev) +& OptMinElevMatcher(optMinElev) => {
       // work inside EitherT so we can make use of the elevation easily
-      var peaksT: EitherT[Task, Throwable, Vector[VisiblePeak]] = for {
+//      var peaksT: EitherT[Task, Throwable, Vector[VisiblePeak]] = for {
+      var peaksT: EitherT[Task, Throwable, Stream[Task, VisiblePeak]] = for {
         // if the elevation was provided, convert to a Task[disjunction], else
         // if the elevation wasn't provided, go get it for the location.
-        elevation <- EitherT(optElev.map(e => Task.now(e.asRight)).getOrElse(ElevationInfo.getElevation(lon, lat).run(elevProvider)))
+        elevation <- EitherT(optElev.map(e => Task.now(e.asRight)).
+          getOrElse(ElevationInfo.getElevation(lon, lat).run(elevProvider)))
 
         // the mininum elevation of the peaks to include in the result
         minElev = optMinElev.getOrElse(0)
 
-        peaks <- EitherT(PeakInfo.findVisible(minElev, Location3D(lon, lat, elevation)).run(peakRepo))
+        peaks = PeakInfo.findVisible(minElev, Location3D(lon, lat, elevation)).run(peakRepo)
       } yield peaks
 
       // Extract the Task[\/] and convert to a response
