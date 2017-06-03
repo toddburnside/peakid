@@ -8,6 +8,7 @@ import doobie.imports._
 import doobie.hikari.imports._
 import elevation.GoogleElevationProvider
 import org.http4s.client.blaze.PooledHttp1Client
+import org.http4s.server.middleware.CORS
 import repositories.PeakRepositoryDb
 
 object Main extends ServerApp {
@@ -27,7 +28,7 @@ object Main extends ServerApp {
       elevProvider = new GoogleElevationProvider(appConfig.google.key, client)
 
       service = Router(
-        "/peaks" -> new PeakService(peakRepo, elevProvider).service,
+        "/peaks" -> (CORS(new PeakService(xa, peakRepo, elevProvider).service)),
         "/profiles" -> new ProfileService(elevProvider).service)
       svr <- BlazeBuilder.bindHttp(8080)
         .mountService(service, "/api")
