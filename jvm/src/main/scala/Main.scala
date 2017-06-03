@@ -2,7 +2,7 @@ package peakid
 
 import org.http4s.server.{Router, Server, ServerApp}
 import org.http4s.server.blaze.BlazeBuilder
-import services.{PeakService, ProfileService}
+import services.{PeakService, ProfileService, StaticFileService}
 import fs2.Task
 import doobie.imports._
 import doobie.hikari.imports._
@@ -10,6 +10,7 @@ import elevation.GoogleElevationProvider
 import org.http4s.client.blaze.PooledHttp1Client
 import org.http4s.server.middleware.CORS
 import repositories.PeakRepositoryDb
+import cats.implicits._
 
 object Main extends ServerApp {
 
@@ -27,11 +28,11 @@ object Main extends ServerApp {
       client = PooledHttp1Client()
       elevProvider = new GoogleElevationProvider(appConfig.google.key, client)
 
-      service = Router(
-        "/peaks" -> (CORS(new PeakService(xa, peakRepo, elevProvider).service)),
-        "/profiles" -> new ProfileService(elevProvider).service)
+      service = StaticFileService.service |+| Router("/api" -> Router(
+        "/peaks" -> (CORS(new PeakService(peakRepo, elevProvider).service)),
+        "/profiles" -> new ProfileService(elevProvider).service))
       svr <- BlazeBuilder.bindHttp(8080)
-        .mountService(service, "/api")
+        .mountService(service, "/")
         .start
     } yield svr
   }
