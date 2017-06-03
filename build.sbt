@@ -1,4 +1,6 @@
 scalaVersion := "2.12.1"
+// use typelevel scala
+scalaOrganization in ThisBuild := "org.typelevel"
 
 val http4sVersion = "0.16.0-cats-SNAPSHOT"
 val circeVersion = "0.6.1"

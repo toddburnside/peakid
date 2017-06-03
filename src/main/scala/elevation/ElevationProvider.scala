@@ -15,8 +15,13 @@ class GoogleElevationProvider(key: String, client: Client) extends ElevationProv
   // TODO: This is also in BaseService - maybe it should be moved elsewhere.
   implicit def circeJsonDecoder[A](implicit decoder: Decoder[A]) = org.http4s.circe.jsonOf[A]
 
-    override def getElevation(lon: Double, lat: Double): Task[Throwable Either GoogleElevationResponse] = {
+  override def getElevation(lon: Double, lat: Double): Task[Throwable Either GoogleElevationResponse] = {
     val uri = s"https://maps.googleapis.com/maps/api/elevation/json?locations=$lat,$lon&key=$key"
     client.expect[GoogleElevationResponse](uri).attempt
   }
+
+//  override def getFreeElevation(lon: Double, lat: Double): Task[Throwable Either GoogleElevationResponse] = {
+//    val uri = s"https://maps.googleapis.com/maps/api/elevation/json?locations=$lat,$lon&key=$key"
+//    client.expect[GoogleElevationResponse](uri).attempt
+//  }
 }
