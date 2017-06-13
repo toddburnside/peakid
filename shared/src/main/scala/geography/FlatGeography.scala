@@ -4,6 +4,7 @@ trait FlatGeography[A] {
   def lon: Double
   def lat: Double
 
+  // distance is in km
   def distanceTo[B](that: FlatGeography[B]): Double =
     FlatGeography.distanceBetween(this, that)
 
@@ -23,6 +24,7 @@ object FlatGeography {
   // Note also that this is the distance on a great circle, not a rhumb
   // line. But, this is close enough for the distances we can see
   // other mountains at, and doesn't have the issues near the poles.
+  // distance is in km
   def distanceBetween[A, B](a: FlatGeography[A], b: FlatGeography[B]): Double = {
     val φ1 = a.lat.toRadians
     val φ2 = b.lat.toRadians

@@ -9,7 +9,7 @@ addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.fu
 //addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.8.1")
 
 // shared versions
-val circeVersion = "0.6.1"
+val circeVersion = "0.8.0"
 
 // JVM versions
 val http4sVersion = "0.16.0-cats-SNAPSHOT"
@@ -22,8 +22,11 @@ val scalaVersionStr = "2.12.1"
 val scalaJSReactVersion = "1.0.0"
 val scalaCssVersion = "0.5.3"
 val diodeVersion = "1.1.2"
-val reactJSVersion = "15.5.4"
 val scalaJSDomVersion = "0.9.2" // only needed for AJAX calls
+
+val reactJSVersion = "15.5.4"
+val bootstrapVersion = "3.3.7"
+val jqueryVersion = "1.11.1"
 
 lazy val root = project.in(file("."))
   .aggregate(peakidJS, peakidJVM)
@@ -72,11 +75,40 @@ lazy val peakid = crossProject.in(file("."))
     )
   )
   .jsSettings(
-    scalaJSUseMainModuleInitializer := true
+    scalaJSUseMainModuleInitializer := true,
+    libraryDependencies ++= Seq(
+      "com.github.japgolly.scalajs-react" %%% "core" % scalaJSReactVersion,
+      "com.github.japgolly.scalajs-react" %%% "extra" % scalaJSReactVersion,
+      "com.github.japgolly.scalacss" %%% "core" % scalaCssVersion,
+      "com.github.japgolly.scalacss" %%% "ext-react" % scalaCssVersion,
+      "io.suzaku" %%% "diode" % diodeVersion,
+      "io.suzaku" %%% "diode-react" % diodeVersion,
+      "org.scala-js" %%% "scalajs-dom" % scalaJSDomVersion // only needed for AJAX calls
+    ),
+    jsDependencies ++= Seq(
+      "org.webjars.npm" % "react" % reactJSVersion / "react-with-addons.js" commonJSName "React" minified "react-with-addons.min.js",
+      "org.webjars.npm" % "react-dom" % reactJSVersion / "react-dom.js" commonJSName "ReactDOM" minified "react-dom.min.js" dependsOn "react-with-addons.js",
+      "org.webjars" % "jquery" % jqueryVersion / "jquery.js" minified "jquery.min.js",
+      "org.webjars" % "bootstrap" % bootstrapVersion / "bootstrap.js" minified "bootstrap.min.js" dependsOn "jquery.js"
+    ),
+    skip in packageJSDependencies := false
+    // This is for the scalajsbundler plugin, which I had some issues with...
+//    npmDependencies in Compile ++= Seq(
+//      "react" -> reactJSVersion,
+//      "react-dom" -> reactJSVersion
+//    ),
+//    npmDevDependencies in Compile += "expose-loader" -> "0.7.1",
+
+//    crossTarget in (Compile, fullOptJS) := file("public"),
+//    crossTarget in (Compile, fastOptJS) := file("public")
   )
 
 lazy val peakidJS = peakid.js
-lazy val peakidJVM = peakid.jvm
+//  .enablePlugins(ScalaJSBundlerPlugin)
+lazy val peakidJVM = peakid.jvm settings(
+  resourceGenerators in Compile <+= (fastOptJS in Compile in peakidJS).map(f => Seq(f.data)),
+  watchSources ++= (watchSources in peakidJS).value
+)
 
 scalacOptions ++= Seq(
   "-deprecation",

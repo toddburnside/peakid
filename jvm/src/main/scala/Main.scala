@@ -28,10 +28,10 @@ object Main extends ServerApp {
       client = PooledHttp1Client()
       elevProvider = new GoogleElevationProvider(appConfig.google.key, client)
 
-      service = StaticFileService.service |+| Router("/api" -> Router(
+      service = Router("/api" -> Router(
         "/peaks" -> (CORS(new PeakService(peakRepo, elevProvider).service)),
-        "/profiles" -> new ProfileService(elevProvider).service))
-      svr <- BlazeBuilder.bindHttp(8080)
+        "/profiles" -> new ProfileService(elevProvider).service)) |+| StaticFileService.service
+        svr <- BlazeBuilder.bindHttp(8080)
         .mountService(service, "/")
         .start
     } yield svr

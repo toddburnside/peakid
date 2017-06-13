@@ -24,6 +24,6 @@ object PeakInfo {
     } yield process.filter(_.isVisibleFrom(loc)).map { peak =>
       val dist = loc.distanceTo(peak)
       val bearing = loc.bearingTo(peak)
-      VisiblePeak(peak.id, peak.name, peak.elevation, bearing, dist)
+      VisiblePeak(peak.id, peak.name, peak.elevation, bearing, dist, peak.location)
     }.runLog.attempt
 }
