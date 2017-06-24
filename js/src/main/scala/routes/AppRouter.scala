@@ -1,7 +1,14 @@
 package routes
 
 import components.{Navbar, PeakList, PeakMap, SearchCriteriaEntry}
-import japgolly.scalajs.react.extra.router.{BaseUrl, Redirect, Resolution, Router, RouterConfigDsl, RouterCtl}
+import japgolly.scalajs.react.extra.router.{
+  BaseUrl,
+  Redirect,
+  Resolution,
+  Router,
+  RouterConfigDsl,
+  RouterCtl
+}
 import japgolly.scalajs.react.vdom.html_<^._
 import services.AppCircuit
 
@@ -19,8 +26,9 @@ object AppRouter {
     <.div(
       Navbar(c, r.page),
       <.div(^.className := "container",
-        criteriaConnection(c => locationConnection(l => SearchCriteriaEntry(c, l))),
-        r.render())
+            criteriaConnection(
+              c => locationConnection(l => SearchCriteriaEntry(c, l))),
+            r.render())
     )
   }
 
@@ -31,8 +39,9 @@ object AppRouter {
 
     (trimSlashes
       | staticRoute(root, PeakMapPage) ~> render(PeakMap())
-      | staticRoute("#list", PeakListPage) ~> render(peakConnection(p => PeakList(p)))
-      ).notFound(redirectToPage(PeakMapPage)(Redirect.Replace))
+      | staticRoute("#list", PeakListPage) ~> render(
+        peakConnection(p => PeakList(p))))
+      .notFound(redirectToPage(PeakMapPage)(Redirect.Replace))
       .renderWith(layout)
   }
 

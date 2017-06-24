@@ -29,28 +29,34 @@ object FlatGeography {
     val φ1 = a.lat.toRadians
     val φ2 = b.lat.toRadians
     val deltaλ = (b.lon - a.lon).toRadians
-    math.acos(math.sin(φ1) * math.sin(φ2) + math.cos(φ1) * math.cos(φ2) * math.cos(deltaλ)) * R
+    math.acos(
+      math.sin(φ1) * math.sin(φ2) + math.cos(φ1) * math.cos(φ2) * math.cos(
+        deltaλ)) * R
   }
 
   // Bearing is also from http://www.movable-type.co.uk/scripts/latlong.html
   // It is actually the initial bearing for a path along a great circle,
   // not along a rhumb line. For the distances in the application, it should
   // be adequate.
-  def bearingBetween[A, B](start: FlatGeography[A], end: FlatGeography[B]): Double = {
+  def bearingBetween[A, B](start: FlatGeography[A],
+                           end: FlatGeography[B]): Double = {
     val λ1 = start.lon.toRadians
     val φ1 = start.lat.toRadians
     val λ2 = end.lon.toRadians
     val φ2 = end.lat.toRadians
     val φ2Cos = math.cos(φ2)
     val y = math.sin(λ2 - λ1) * φ2Cos
-    val x = math.cos(φ1) * math.sin(φ2) - math.sin(φ1) * φ2Cos * math.cos(λ2 - λ1)
+    val x = math.cos(φ1) * math.sin(φ2) - math.sin(φ1) * φ2Cos * math.cos(
+      λ2 - λ1)
     math.atan2(y, x).toDegrees
   }
 
   // Also from http://www.movable-type.co.uk/scripts/latlong.html.
   // Another great circle calculation. Distance in km, bearing is initial bearing.
   // Returns (lon: Double, lat: Double)
-  def destination[A](start: FlatGeography[A], distance: Double, bearing: Double): (Double, Double) = {
+  def destination[A](start: FlatGeography[A],
+                     distance: Double,
+                     bearing: Double): (Double, Double) = {
     val λ1 = start.lon.toRadians
     val φ1 = start.lat.toRadians
     val φ1Sin = math.sin(φ1)
@@ -60,7 +66,8 @@ object FlatGeography {
     val δSin = math.sin(δ)
     val δCos = math.cos(δ)
     val φ2 = math.asin(φ1Sin * δCos + φ1Cos * δSin * math.cos(θ))
-    val λ2 = λ1 + math.atan2(math.sin(θ) * δSin * φ1Cos, δCos - φ1Sin * math.sin(φ2))
+    val λ2 = λ1 + math.atan2(math.sin(θ) * δSin * φ1Cos,
+                             δCos - φ1Sin * math.sin(φ2))
     val lat2 = φ2.toDegrees
     // normalize lon2 to -180, 180
     val lon2 = (λ2.toDegrees + 540) % 360 - 180

@@ -9,11 +9,25 @@ import org.specs2.mutable.Specification
 object FlatGeographySpec extends Specification with ResultMatchers {
   val loc1 = Location(-5.0, 50.0)
   val loc2 = Location(-3.0, 58.0)
-  val peak1 = new NewPeak((), "Mountain", 1, "OR", "Clackamas", "Map", 7000, Location(-5.0, 50.0))
-  val peak2 = new NewPeak((), "Mountain", 1, "OR", "Clackamas", "Map", 6000, Location(-3.0, 58.0))
+  val peak1 = new NewPeak((),
+                          "Mountain",
+                          1,
+                          "OR",
+                          "Clackamas",
+                          "Map",
+                          7000,
+                          Location(-5.0, 50.0))
+  val peak2 = new NewPeak((),
+                          "Mountain",
+                          1,
+                          "OR",
+                          "Clackamas",
+                          "Map",
+                          6000,
+                          Location(-3.0, 58.0))
   "Test FlatGeography" >> {
     "Test simple distance between Locations" >> {
-     loc1.distanceTo(loc2) must beCloseTo(899.01 +/- 0.1)
+      loc1.distanceTo(loc2) must beCloseTo(899.01 +/- 0.1)
     }
     "Test simple bearing between Locations" >> {
       loc1.bearingTo(loc2).toInt must_== 7

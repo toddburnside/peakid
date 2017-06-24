@@ -13,11 +13,18 @@ import cats.implicits._
 // TODO: Thus far, this is only exploratory to see HOW to write tests on a service.
 // TODO: Now, I need to write some actual tests...
 trait PeakRepo extends PeakRepository {
-  val newPeak = new NewPeak((), "Name", 1, "OR", "Lane", "themap", 1000, Location(1.1, 2.2))
-  val peak = new Peak(1, "Name", 1, "OR", "Lane", "themap", 1000, Location(1.1, 2.2))
+  val newPeak = new NewPeak((),
+                            "Name",
+                            1,
+                            "OR",
+                            "Lane",
+                            "themap",
+                            1000,
+                            Location(1.1, 2.2))
+  val peak =
+    new Peak(1, "Name", 1, "OR", "Lane", "themap", 1000, Location(1.1, 2.2))
   val somePV = peak.some
   val eSomePV = somePV.asRight[Throwable]
-
 
   def find(minElev: Int): Stream[Task, Peak] = ???
   def findOne(id: Int) = Task.now(eSomePV)

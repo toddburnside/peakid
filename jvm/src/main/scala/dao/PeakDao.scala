@@ -7,11 +7,12 @@ import models.PeakBase.{NewPeak, Peak}
 import org.postgis.Point
 
 trait PeakDao {
-    implicit val locationMeta: Meta[Location] =
-      Meta[Point].nxmap(p => new Location(p.x, p.y), l => new Point(l.lon, l.lat))
+  implicit val locationMeta: Meta[Location] =
+    Meta[Point]
+      .nxmap(p => new Location(p.x, p.y), l => new Point(l.lon, l.lat))
 
   // TODO: Limit the results on the server side using GIS stuff.
-  def findOneQuery(id: Int): Query0[Peak] = 
+  def findOneQuery(id: Int): Query0[Peak] =
     sql"""
          select id, name, usgsid, state, county, map, elevation, location
          from peaks

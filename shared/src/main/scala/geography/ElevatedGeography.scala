@@ -30,7 +30,8 @@ object ElevatedGeography {
 
   // If the distance to the horizon for each of the points overlaps, then one
   // should be visible from the other.
-  def isVisibleFrom[A, B](a: ElevatedGeography[A], b: ElevatedGeography[B]): Boolean = {
+  def isVisibleFrom[A, B](a: ElevatedGeography[A],
+                          b: ElevatedGeography[B]): Boolean = {
     a.toHorizon + b.toHorizon > a.distanceTo(b)
   }
 }

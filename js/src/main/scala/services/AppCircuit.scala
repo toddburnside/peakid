@@ -12,32 +12,41 @@ import scala.concurrent.{Future, Promise}
 
 // The application model
 case class SearchCriteria(lon: Double, lat: Double, minElev: Int)
-case class VisiblePeaks(searchCriteria: SearchCriteria, peaks: Pot[Seq[VisiblePeak]])
+case class VisiblePeaks(searchCriteria: SearchCriteria,
+                        peaks: Pot[Seq[VisiblePeak]])
 
-case class RootModel(visiblePeaks: VisiblePeaks, currentLocation: Pot[Location])
+case class RootModel(visiblePeaks: VisiblePeaks,
+                     currentLocation: Pot[Location])
 
 // Actions
 case class UpdateSearchCriteria(searchCriteria: SearchCriteria) extends Action
 
-case class RequestPeaks(potResult: Pot[Seq[VisiblePeak]] = Empty) extends PotAction[Seq[VisiblePeak], RequestPeaks] {
-  override def next(newResult: Pot[Seq[VisiblePeak]]): RequestPeaks = RequestPeaks(newResult)
+case class RequestPeaks(potResult: Pot[Seq[VisiblePeak]] = Empty)
+    extends PotAction[Seq[VisiblePeak], RequestPeaks] {
+  override def next(newResult: Pot[Seq[VisiblePeak]]): RequestPeaks =
+    RequestPeaks(newResult)
 }
 
 case class GetCurrentLocation(potResult: Pot[Location] = Empty)
-  extends PotAction[Location, GetCurrentLocation] {
-  override def next(newResult: Pot[Location]): GetCurrentLocation = GetCurrentLocation(newResult)
+    extends PotAction[Location, GetCurrentLocation] {
+  override def next(newResult: Pot[Location]): GetCurrentLocation =
+    GetCurrentLocation(newResult)
 }
 
 object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
-  override def initialModel: RootModel = RootModel(VisiblePeaks(SearchCriteria(-122.6, 45.5, 14000), Empty), Empty)
+  override def initialModel: RootModel =
+    RootModel(VisiblePeaks(SearchCriteria(-122.6, 45.5, 14000), Empty), Empty)
 
-  def loadPeaks(lon: Double, lat: Double, minElev: Int): Future[Seq[VisiblePeak]] = {
+  def loadPeaks(lon: Double,
+                lat: Double,
+                minElev: Int): Future[Seq[VisiblePeak]] = {
     import io.circe.parser.decode
     import io.circe.generic.auto._
     def decodePeaks(s: String): Future[Seq[VisiblePeak]] =
       decode[Seq[VisiblePeak]](s).fold(Future.failed(_), Future.successful(_))
 
-    Ajax.get(s"api/peaks?lon=$lon&lat=$lat&minElev=$minElev")
+    Ajax
+      .get(s"api/peaks?lon=$lon&lat=$lat&minElev=$minElev")
       .flatMap(xhr => decodePeaks(xhr.responseText))
   }
 
@@ -45,7 +54,9 @@ object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
     override protected def handle = {
       case action: RequestPeaks =>
         val updateEffect = action.effect(
-          loadPeaks(value.searchCriteria.lon, value.searchCriteria.lat, value.searchCriteria.minElev)
+          loadPeaks(value.searchCriteria.lon,
+                    value.searchCriteria.lat,
+                    value.searchCriteria.minElev)
         )(peaks => peaks)
 
         action.handle {
@@ -67,18 +78,22 @@ object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
   val currentLocationHandler = new ActionHandler(zoomTo(_.currentLocation)) {
     override protected def handle = {
       case action: GetCurrentLocation =>
-        val locationEffect = action.effect[Location](GeoLocation.getCurrentLocation())(loc => loc)
+        val locationEffect =
+          action.effect[Location](GeoLocation.getCurrentLocation())(loc => loc)
 
         action.handleWith(this, locationEffect)(PotAction.handler())
     }
   }
 
-  val searchCriteriaHandler = new ActionHandler(zoomTo(_.visiblePeaks.searchCriteria)) {
+  val searchCriteriaHandler = new ActionHandler(
+    zoomTo(_.visiblePeaks.searchCriteria)) {
     override protected def handle = {
       case UpdateSearchCriteria(searchCriteria) => updated(searchCriteria)
     }
   }
 
   override protected def actionHandler: AppCircuit.HandlerFunction =
-    composeHandlers(peaksHandler, currentLocationHandler, searchCriteriaHandler)
+    composeHandlers(peaksHandler,
+                    currentLocationHandler,
+                    searchCriteriaHandler)
 }

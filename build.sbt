@@ -5,7 +5,8 @@ scalaOrganization in ThisBuild := "org.typelevel"
 // Only necessary for SNAPSHOT releases
 resolvers += Resolver.sonatypeRepo("snapshots")
 
-addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
+addCompilerPlugin(
+  "org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
 //addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.8.1")
 
 // shared versions
@@ -28,14 +29,16 @@ val reactJSVersion = "15.5.4"
 val bootstrapVersion = "3.3.7"
 val jqueryVersion = "1.11.1"
 
-lazy val root = project.in(file("."))
+lazy val root = project
+  .in(file("."))
   .aggregate(peakidJS, peakidJVM)
   .settings(
     publish := {},
     publishLocal := {}
   )
 
-lazy val peakid = crossProject.in(file("."))
+lazy val peakid = crossProject
+  .in(file("."))
   .settings(
     name := "peakid",
     version := "0.1",
@@ -52,24 +55,19 @@ lazy val peakid = crossProject.in(file("."))
       "org.http4s" %% "http4s-blaze-server" % http4sVersion,
       "org.http4s" %% "http4s-blaze-client" % http4sVersion,
       "org.http4s" %% "http4s-circe" % http4sVersion,
-
       // to enable logging in http4s
       "ch.qos.logback" % "logback-classic" % "1.2.1",
-
-      "org.tpolecat" %% "doobie-core-cats"               % doobieVersion,
-      "org.tpolecat" %% "doobie-postgres-cats"           % doobieVersion,
-      "org.tpolecat" %% "doobie-hikari-cats"             % doobieVersion,
-      "org.tpolecat" %% "doobie-specs2-cats"             % doobieVersion % "test",
+      "org.tpolecat" %% "doobie-core-cats" % doobieVersion,
+      "org.tpolecat" %% "doobie-postgres-cats" % doobieVersion,
+      "org.tpolecat" %% "doobie-hikari-cats" % doobieVersion,
+      "org.tpolecat" %% "doobie-specs2-cats" % doobieVersion % "test",
       "org.postgis" % "postgis-jdbc" % "1.3.3",
-
-      "com.fortysevendeg" %% "classy-core"            % caseClassyVersion,
+      "com.fortysevendeg" %% "classy-core" % caseClassyVersion,
       "com.fortysevendeg" %% "classy-config-typesafe" % caseClassyVersion,
-      "com.fortysevendeg" %% "classy-generic"         % caseClassyVersion,
+      "com.fortysevendeg" %% "classy-generic" % caseClassyVersion,
       //  "com.fortysevendeg" %% "classy-cats"            % caseClassyVersion,
-
       "org.specs2" %%% "specs2-core" % specs2Version % "test",
       "org.specs2" %%% "specs2-matcher-extra" % specs2Version % "test",
-
       "com.github.mpilquist" %% "simulacrum" % "0.10.0"
 //      "com.lihaoyi" % "ammonite" % "0.8.2" % "test" cross CrossVersion.full
     )
@@ -105,14 +103,16 @@ lazy val peakid = crossProject.in(file("."))
 
 lazy val peakidJS = peakid.js
 //  .enablePlugins(ScalaJSBundlerPlugin)
-lazy val peakidJVM = peakid.jvm settings(
-  resourceGenerators in Compile <+= (fastOptJS in Compile in peakidJS).map(f => Seq(f.data)),
+lazy val peakidJVM = peakid.jvm settings (
+  resourceGenerators in Compile <+= (fastOptJS in Compile in peakidJS).map(f =>
+    Seq(f.data)),
   watchSources ++= (watchSources in peakidJS).value
 )
 
 scalacOptions ++= Seq(
   "-deprecation",
-  "-encoding", "UTF-8",       // yes, this is 2 args
+  "-encoding",
+  "UTF-8", // yes, this is 2 args
   "-feature",
   "-language:existentials",
   "-language:higherKinds",
@@ -121,11 +121,11 @@ scalacOptions ++= Seq(
   "-Xfatal-warnings",
   "-Xlint",
   "-Yno-adapted-args",
-  "-Ywarn-dead-code",        // N.B. doesn't work well with the ??? hole
+  "-Ywarn-dead-code", // N.B. doesn't work well with the ??? hole
   "-Ywarn-numeric-widen",
   "-Ywarn-value-discard",
   "-Xfuture",
-  "-Ywarn-unused-import"     // 2.11 only
+  "-Ywarn-unused-import" // 2.11 only
 )
 
 scalacOptions in Test ++= Seq("-Yrangepos")

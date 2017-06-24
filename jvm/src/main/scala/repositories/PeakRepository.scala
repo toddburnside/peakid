@@ -9,4 +9,3 @@ trait PeakRepository {
   def find(minElev: Int): Stream[Task, Peak]
   def insert(newPeak: NewPeak): Task[Throwable Either Peak]
 }
-
