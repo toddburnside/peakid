@@ -24,6 +24,7 @@ val scalaJSReactVersion = "1.0.0"
 val scalaCssVersion = "0.5.3"
 val diodeVersion = "1.1.2"
 val scalaJSDomVersion = "0.9.2" // only needed for AJAX calls
+val reactComponentsVersion = "0.6.0"
 
 val reactJSVersion = "15.5.4"
 val bootstrapVersion = "3.3.7"
@@ -82,6 +83,7 @@ lazy val peakid = crossProject
       "io.suzaku" %%% "diode" % diodeVersion,
       "io.suzaku" %%% "diode-react" % diodeVersion,
       "org.scala-js" %%% "scalajs-dom" % scalaJSDomVersion // only needed for AJAX calls
+//      "com.olvind" %%% "scalajs-react-components" % reactComponentsVersion
     ),
     jsDependencies ++= Seq(
       "org.webjars.npm" % "react" % reactJSVersion / "react-with-addons.js" commonJSName "React" minified "react-with-addons.min.js",
