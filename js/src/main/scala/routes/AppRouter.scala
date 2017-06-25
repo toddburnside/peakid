@@ -41,7 +41,7 @@ object AppRouter {
   val config = RouterConfigDsl[AppPage].buildConfig { dsl =>
     import dsl._
 
-    val peakConnection = AppCircuit.connect(_.visiblePeaks.peaks)
+    val peakConnection = AppCircuit.connect(_.visiblePeaks)
 
     (trimSlashes
       | staticRoute(root, PeakMapPage) ~> render(PeakMap())
