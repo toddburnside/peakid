@@ -25,10 +25,16 @@ object AppRouter {
 
     <.div(
       Navbar(c, r.page),
-      <.div(^.className := "container",
-            criteriaConnection(
-              c => locationConnection(l => SearchCriteriaEntry(c, l))),
-            r.render())
+      <.div(
+        ^.className := "container",
+        <.div(
+          ^.className := "row",
+          <.div(^.className := "col-md-2",
+                criteriaConnection(
+                  c => locationConnection(l => SearchCriteriaEntry(c, l)))),
+          <.div(^.className := "col-md-10", r.render())
+        )
+      )
     )
   }
 

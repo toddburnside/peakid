@@ -5,6 +5,7 @@ import diode.react.ModelProxy
 import diode.react.ReactPot._
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.component.Scala.BackendScope
+import japgolly.scalajs.react.component.builder.Lifecycle.ComponentWillReceiveProps
 import japgolly.scalajs.react.vdom.html_<^._
 import models.Location
 import services.{
@@ -21,23 +22,6 @@ object SearchCriteriaEntry {
   case class State(searchCriteria: SearchCriteria, lastLocationState: PotState)
 
   class Backend($ : BackendScope[Props, State]) {
-
-    // TODO: Make this work
-    // Ughh. I need to bring in a lens library...
-    def willUpdate: Callback = {
-      for {
-        props <- $.props
-        state <- $.state
-        pot = props.locationProxy()
-        oldState = state.lastLocationState
-        _ = if (oldState == PotState.PotPending && pot.isReady)
-          $.modState(s =>
-            s.copy(searchCriteria = s.searchCriteria.copy(lon = 123.45)))
-        _ = if (oldState != pot.state)
-          $.modState(s =>
-            s.copy(lastLocationState = props.locationProxy().state))
-      } yield ()
-    }
 
     def updateLon(e: ReactEventFromInput) = {
       val value = e.target.value.toDouble
@@ -57,8 +41,9 @@ object SearchCriteriaEntry {
         s.copy(searchCriteria = s.searchCriteria.copy(minElev = value)))
     }
 
-    def submit: Callback = {
+    def submit(e: ReactEventFromInput): Callback = {
       for {
+        _ <- e.preventDefaultCB
         props <- $.props
         state <- $.state
         _ <- props.criteriaProxy.dispatchCB(
@@ -73,8 +58,8 @@ object SearchCriteriaEntry {
 
     // TODO: Need to handle failure to get current location better, and use current location
     def createForm(s: State) = {
-      <.div(
-        ^.className := "form-inline",
+      <.form(
+        ^.onSubmit ==> submit,
         <.div(
           ^.className := "form-group",
           <.label(^.`for` := "longitude", "Longitude"),
@@ -99,9 +84,7 @@ object SearchCriteriaEntry {
                          ^.value := s.searchCriteria.minElev.toString,
                          ^.onChange ==> updateElev)
         ),
-        <.button(^.className := "btn btn-default",
-                 ^.onClick --> submit,
-                 "Update"),
+        <.button(^.className := "btn btn-primary", "Load Peaks"),
         <.button(^.className := "btn btn-default",
                  ^.onClick --> getCurrentLocation,
                  "Get Current Location")
@@ -110,7 +93,6 @@ object SearchCriteriaEntry {
 
     def render(props: Props, state: State) = {
       <.div(
-        "Current Location - will be Visible Peaks Search Criteria form   ",
         props
           .locationProxy()
           .renderPending(
@@ -121,15 +103,25 @@ object SearchCriteriaEntry {
         props
           .locationProxy()
           .renderFailed(_ => <.div("Error getting current location")),
-        props
-          .locationProxy()
-          .render(l => <.div(s"Current Location: (${l.lon}, ${l.lat})")),
-        <.div(s"Search coordinates (${props.criteriaProxy().lon}, ${props
-          .criteriaProxy()
-          .lat}): ${props.criteriaProxy().minElev}"),
         createForm(state)
       )
     }
+  }
+
+  def willReceiveProps(f: ComponentWillReceiveProps[Props, State, Backend]) = {
+    val lastState = f.state.lastLocationState
+    val potLoc = f.nextProps.locationProxy()
+    val nextState = potLoc.state
+    // if the state was pending and is not ready, that means we are receiving
+    // a new "current" location, so we need to update the lon and lat.
+    Callback.when(lastState == PotState.PotPending && potLoc.isReady)(
+      potLoc.fold(Callback.empty)(loc =>
+        f.modState(s =>
+          s.copy(searchCriteria =
+            s.searchCriteria.copy(lon = loc.lon, lat = loc.lat))))) >>
+      // if the state has changed, update the last state.
+      Callback.when(lastState != nextState)(f.modState(s =>
+        s.copy(lastLocationState = nextState)))
   }
 
   val component = ScalaComponent
@@ -137,7 +129,7 @@ object SearchCriteriaEntry {
     .initialStateFromProps(p =>
       State(p.criteriaProxy(), p.locationProxy().state))
     .renderBackend[Backend]
-    .componentWillUpdate(_.backend.willUpdate)
+    .componentWillReceiveProps(willReceiveProps)
     .build
 
   def apply(criteriaProxy: ModelProxy[SearchCriteria],
