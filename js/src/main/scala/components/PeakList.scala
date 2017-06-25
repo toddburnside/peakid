@@ -8,39 +8,53 @@ import japgolly.scalajs.react.vdom.html_<^._
 import models.VisiblePeak
 import services.VisiblePeaks
 
+import scalajs.react.components.ReactTable
+
 object PeakList {
 
   case class Props(visiblePeaksProxy: ModelProxy[VisiblePeaks])
 
   class Backend($ : BackendScope[Props, Unit]) {
-    def createTable(peaks: Seq[VisiblePeak]) =
-      if (peaks.length == 0) <.div("No peaks to display")
-      else {
-        <.table(
-          <.thead(
-            <.tr(
-              <.th("Name"),
-              <.th("Elevation"),
-              <.th("Distance"),
-              <.th("Bearing"),
-              <.th("Longitude"),
-              <.th("Latitude")
-            )
-          ),
-          <.tbody(
-            peaks.toTagMod(
-              peak =>
-                <.tr(
-                  <.td(peak.name),
-                  <.td(peak.elevation),
-                  <.td(f"${peak.distance}%.1f"),
-                  <.td(Math.round(peak.bearing)),
-                  <.td(f"${peak.location.lon}%.2f"),
-                  <.td(f"${peak.location.lat}%.2f")
-              ))
-          )
-        )
-      }
+    val columns =
+      List("name", "elevation", "distance", "bearing", "longitude", "latitude")
+
+    def formatDouble(p: Int)(a: Any): VdomElement = {
+      val d = a.asInstanceOf[Double]
+      val s = s"%.${p}f".format(d)
+      <.span(s)
+    }
+    //config is a List of touple4 (String, Option[(Any) => ReactElement], Option[(Model, Model) => Boolean],Option[Double])
+    // ._1: columnname you want to config
+    // ._2: custom render function (custom cell factory)
+    // ._3: Sorting function
+    // ._4: column width (flex := width)
+    val config: List[ReactTable.Config] = List(
+      ("name", None, Some(ReactTable.getStringSort("name")), None),
+      ("elevation", None, Some(ReactTable.getIntSort("elevation")), None),
+      ("distance",
+       Some(formatDouble(1)),
+       Some(ReactTable.getDoubleSort("distance")),
+       None),
+      ("bearing",
+       Some(formatDouble(0)),
+       Some(ReactTable.getDoubleSort("bearing")),
+       None),
+      ("longitude", Some(formatDouble(5)), None, None),
+      ("latitude", Some(formatDouble(5)), None, None)
+    )
+    def peakToMap(peak: VisiblePeak): ReactTable.Model = {
+      Map(
+        "name" -> peak.name,
+        "elevation" -> peak.elevation,
+        "distance" -> peak.distance,
+        "bearing" -> peak.bearing,
+        "longitude" -> peak.location.lon,
+        "latitude" -> peak.location.lat
+      )
+    }
+
+    def peaksToMapVector(peaks: Seq[VisiblePeak]): Vector[ReactTable.Model] =
+      peaks.map(peakToMap).toVector
 
     def render(props: Props) = {
       val criteria = props.visiblePeaksProxy.value.searchCriteria
@@ -58,7 +72,16 @@ object PeakList {
           .renderFailed(_ => <.div("Error Loading Peaks")),
         potPeaks
           .render(p => {
-            <.div(<.h1(s"Peaks visible from (${criteria.lon}, ${criteria.lat}) at least ${criteria.minElev} feet high"), createTable(p))
+            val data = peaksToMapVector(p)
+            <.div(
+              <.h1(
+                s"Peaks visible from (${criteria.lon}, ${criteria.lat}) at least ${criteria.minElev} feet high"),
+              ReactTable(data = data,
+                         columns = columns,
+                         config = config,
+                         rowsPerPage = 15).when(p.nonEmpty),
+              <.div("No peaks to display").when(p.isEmpty)
+            )
           })
       )
     }
@@ -69,7 +92,6 @@ object PeakList {
     .renderBackend[Backend]
     .build
 
-  def apply(
-      visiblePeaksProxy: ModelProxy[VisiblePeaks]): VdomElement =
+  def apply(visiblePeaksProxy: ModelProxy[VisiblePeaks]): VdomElement =
     component(Props(visiblePeaksProxy))
 }
