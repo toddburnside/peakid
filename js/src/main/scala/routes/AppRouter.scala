@@ -29,10 +29,10 @@ object AppRouter {
         ^.className := "container",
         <.div(
           ^.className := "row",
-          <.div(^.className := "col-md-2",
+          <.div(^.className := "col-sm-3 col-md-2",
                 criteriaConnection(
                   c => locationConnection(l => SearchCriteriaEntry(c, l)))),
-          <.div(^.className := "col-md-10", r.render())
+          <.div(^.className := "col-sm-9 col-md-10", r.render())
         )
       )
     )
@@ -44,7 +44,8 @@ object AppRouter {
     val peakConnection = AppCircuit.connect(_.visiblePeaks)
 
     (trimSlashes
-      | staticRoute(root, PeakMapPage) ~> render(PeakMap())
+      | staticRoute(root, PeakMapPage) ~> render(
+        peakConnection(p => PeakMap(p)))
       | staticRoute("#list", PeakListPage) ~> render(
         peakConnection(p => PeakList(p))))
       .notFound(redirectToPage(PeakMapPage)(Redirect.Replace))
