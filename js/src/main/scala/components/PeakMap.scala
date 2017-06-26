@@ -47,10 +47,11 @@ object PeakMap {
                      content = makeContent(p)))
           .toList
         val here = hereMarker(criteria.lat, criteria.lon)
-        GoogleMap(center = LatLng(criteria.lat, criteria.lon),
-                  zoom = 6,
-                  markers = here :: markers,
-                  width = "100%")
+        <.div(Header(criteria),
+              GoogleMap(center = LatLng(criteria.lat, criteria.lon),
+                        zoom = 6,
+                        markers = here :: markers,
+                        width = "100%"))
       })
     )
   }

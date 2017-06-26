@@ -74,8 +74,7 @@ object PeakList {
           .render(p => {
             val data = peaksToMapVector(p)
             <.div(
-              <.h1(
-                s"Peaks visible from (${criteria.lon}, ${criteria.lat}) at least ${criteria.minElev} feet high"),
+              Header(criteria),
               ReactTable(data = data,
                          columns = columns,
                          config = config,
