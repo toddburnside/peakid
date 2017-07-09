@@ -18,5 +18,5 @@ object AppConfig {
 
 case class DB(driver: String, url: String, user: String, pass: String)
 case class Google(key: String)
-case class ServerConfig(port: Int)
+case class ServerConfig(port: Int, host: String)
 case class AppConfig(db: DB, google: Google, server: ServerConfig)
