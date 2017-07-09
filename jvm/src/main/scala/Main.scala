@@ -35,7 +35,7 @@ object Main extends ServerApp {
           "/peaks" -> (CORS(new PeakService(peakRepo, elevProvider).service)),
           "/profiles" -> new ProfileService(elevProvider).service)) |+| StaticFileService.service
       svr <- BlazeBuilder
-        .bindHttp(8080)
+        .bindHttp(appConfig.server.port)
         .mountService(service, "/")
         .start
     } yield svr

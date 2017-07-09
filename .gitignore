@@ -20,6 +20,3 @@ project/plugins/project/
 
 .idea/
 env.src
-
-# don't check in the config file because it has sensitive info.
-application.conf

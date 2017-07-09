@@ -49,12 +49,12 @@ class PeakService(val peakRepo: PeakRepository,
       } yield result
 
     // add a new peak
-    case req @ POST -> Root =>
-      req.decode[NewPeak] { p =>
-        for {
-          peakView <- PeakInfo.insert(p).run(peakRepo)
-          result <- eitherToResponse(peakView)(Ok(_))
-        } yield result
-      }
+//    case req @ POST -> Root =>
+//      req.decode[NewPeak] { p =>
+//        for {
+//          peakView <- PeakInfo.insert(p).run(peakRepo)
+//          result <- eitherToResponse(peakView)(Ok(_))
+//        } yield result
+//      }
   }
 }

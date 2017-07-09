@@ -15,7 +15,7 @@ val circeVersion = "0.8.0"
 // JVM versions
 val http4sVersion = "0.16.0-cats-SNAPSHOT"
 val doobieVersion = "0.4.1"
-val caseClassyVersion = "0.3.0"
+val caseClassyVersion = "0.4.0"
 val specs2Version = "3.8.8"
 val scalaVersionStr = "2.12.1"
 
@@ -63,10 +63,10 @@ lazy val peakid = crossProject
       "org.tpolecat" %% "doobie-hikari-cats" % doobieVersion,
       "org.tpolecat" %% "doobie-specs2-cats" % doobieVersion % "test",
       "org.postgis" % "postgis-jdbc" % "1.3.3",
-      "com.fortysevendeg" %% "classy-core" % caseClassyVersion,
-      "com.fortysevendeg" %% "classy-config-typesafe" % caseClassyVersion,
-      "com.fortysevendeg" %% "classy-generic" % caseClassyVersion,
-      //  "com.fortysevendeg" %% "classy-cats"            % caseClassyVersion,
+      "com.47deg" %% "classy-core" % caseClassyVersion,
+      "com.47deg" %% "classy-config-typesafe" % caseClassyVersion,
+      "com.47deg" %% "classy-generic" % caseClassyVersion,
+      //  "com.47deg" %% "classy-cats"            % caseClassyVersion,
       "org.specs2" %%% "specs2-core" % specs2Version % "test",
       "org.specs2" %%% "specs2-matcher-extra" % specs2Version % "test",
       "com.github.mpilquist" %% "simulacrum" % "0.10.0"
@@ -105,11 +105,13 @@ lazy val peakid = crossProject
 
 lazy val peakidJS = peakid.js
 //  .enablePlugins(ScalaJSBundlerPlugin)
-lazy val peakidJVM = peakid.jvm settings (
-  resourceGenerators in Compile <+= (fastOptJS in Compile in peakidJS).map(f =>
-    Seq(f.data)),
-  watchSources ++= (watchSources in peakidJS).value
-)
+lazy val peakidJVM = (peakid.jvm)
+  .enablePlugins(JavaServerAppPackaging)
+  .settings(
+    resourceGenerators in Compile <+= (fastOptJS in Compile in peakidJS)
+      .map(f => Seq(f.data)),
+    watchSources ++= (watchSources in peakidJS).value
+  )
 
 scalacOptions ++= Seq(
   "-deprecation",
