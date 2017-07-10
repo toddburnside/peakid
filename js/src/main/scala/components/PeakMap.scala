@@ -47,11 +47,18 @@ object PeakMap {
                      content = makeContent(p)))
           .toList
         val here = hereMarker(criteria.lat, criteria.lon)
-        <.div(Header(criteria),
-              GoogleMap(center = LatLng(criteria.lat, criteria.lon),
-                        zoom = 6,
-                        markers = here :: markers,
-                        width = "100%"))
+        // TODO: Find a better way to get the key, or restrict the key.
+        <.div(
+          Header(criteria),
+          GoogleMap(
+            center = LatLng(criteria.lat, criteria.lon),
+            zoom = 6,
+            markers = here :: markers,
+            width = "100%",
+            url =
+              "https://maps.googleapis.com/maps/api/js?key=AIzaSyALTa49hSkCdXDULrktOBklQ4wm9CYwGyg"
+          )
+        )
       })
     )
   }
