@@ -39,7 +39,7 @@ object Navbar {
           <.div(^.className := "navbar-header",
                 <.span(^.className := "navbar-brand", "peakid")),
           <.div(^.className := "collapse navbar-collapse",
-                <.ul(^.className := "navbar navbar-nav",
+                <.ul(^.className := "nav navbar-nav",
                      menuItems.toTagMod(renderMenuItem(props) _)))
         )
       )
