@@ -48,7 +48,8 @@ object FlatGeography {
     val y = math.sin(λ2 - λ1) * φ2Cos
     val x = math.cos(φ1) * math.sin(φ2) - math.sin(φ1) * φ2Cos * math.cos(
       λ2 - λ1)
-    math.atan2(y, x).toDegrees
+    val bearing = math.atan2(y, x).toDegrees
+    if (bearing < 0) bearing + 360 else bearing
   }
 
   // Also from http://www.movable-type.co.uk/scripts/latlong.html.
