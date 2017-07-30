@@ -60,32 +60,30 @@ object SearchCriteriaEntry {
     def createForm(s: State) = {
       <.form(
         ^.onSubmit ==> submit,
+        ^.className := "ui form",
         <.div(
-          ^.className := "form-group",
+          ^.className := "field",
           <.label(^.`for` := "longitude", "Longitude"),
-          <.input.number(^.className := "form-control",
-                         ^.id := "longitude",
+          <.input.number(^.id := "longitude",
                          ^.value := s.searchCriteria.lon.toString,
                          ^.onChange ==> updateLon)
         ),
         <.div(
-          ^.className := "form-group",
+          ^.className := "field",
           <.label(^.`for` := "latitude", "Latitude"),
-          <.input.number(^.className := "form-control",
-                         ^.id := "latitude",
+          <.input.number(^.id := "latitude",
                          ^.value := s.searchCriteria.lat.toString,
                          ^.onChange ==> updateLat)
         ),
         <.div(
-          ^.className := "form-group",
+          ^.className := "field",
           <.label(^.`for` := "minElev", "Minimum Elevation"),
-          <.input.number(^.className := "form-control",
-                         ^.id := "minElev",
+          <.input.number(^.id := "minElev",
                          ^.value := s.searchCriteria.minElev.toString,
                          ^.onChange ==> updateElev)
         ),
-        <.button(^.className := "btn btn-primary", "Load Peaks"),
-        <.button(^.className := "btn btn-default",
+        <.button(^.className := "ui primary button", "Load Peaks"),
+        <.button(^.className := "ui button",
                  ^.onClick --> getCurrentLocation,
                  "Get Current Location")
       )
@@ -97,9 +95,7 @@ object SearchCriteriaEntry {
           .locationProxy()
           .renderPending(
             _ > 500,
-            _ =>
-              <.div(
-                <.i(^.className := s"fa fa-spinner fa-pulse fa-3x fa-fw"))),
+            _ => <.div(<.i(^.className := "huge spinner loading icon"))),
         props
           .locationProxy()
           .renderFailed(_ => <.div("Error getting current location")),

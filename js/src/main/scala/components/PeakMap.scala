@@ -37,7 +37,7 @@ object PeakMap {
       potPeaks.renderEmpty(<.h1("Peaks have not been loaded")),
       potPeaks.renderPending(
         _ > 500,
-        _ => <.div(<.i(^.className := s"fa fa-spinner fa-pulse fa-3x fa-fw"))),
+        _ => <.div(<.i(^.className := "massive spinner loading icon"))),
       potPeaks.render(peaks => {
         val markers = peaks
           .map(

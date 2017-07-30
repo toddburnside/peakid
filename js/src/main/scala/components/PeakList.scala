@@ -65,9 +65,7 @@ object PeakList {
         potPeaks
           .renderPending(
             _ > 500,
-            _ =>
-              <.div(
-                <.i(^.className := s"fa fa-spinner fa-pulse fa-3x fa-fw"))),
+            _ => <.div(<.i(^.className := "massive spinner loading icon"))),
         potPeaks
           .renderFailed(_ => <.div("Error Loading Peaks")),
         potPeaks

@@ -16,31 +16,34 @@ object Navbar {
                               iconName: String,
                               page: AppPage)
   private val menuItems = Seq(
-    MenuItem(1, _ => "Map", "map-marker", PeakMapPage),
-    MenuItem(2, _ => "List", "list", PeakListPage)
+    MenuItem(1, _ => "Map", "marker", PeakMapPage),
+    MenuItem(2, _ => "List", "unordered list", PeakListPage)
   )
 
-  def nameToIcon(iconName: String) = <.i(^.className := s"fa fa-$iconName")
+  def nameToIcon(iconName: String) = <.i(^.className := s"$iconName icon")
 
   def renderMenuItem(props: Props)(item: MenuItem): VdomElement =
-    <.li(
-      ^.key := item.idx,
+    <.a(
+      ^.className := "item",
       (^.className := "active").when(props.currentPage == item.page),
-      props.router
-        .link(item.page)(nameToIcon(item.iconName), " ", item.label(props))
+      ^.href := props.router.urlFor(item.page).value,
+      nameToIcon(item.iconName),
+      item.label(props)
     )
 
   private class Backend($ : BackendScope[Props, Unit]) {
     def render(props: Props) = {
-      <.nav(
-        ^.className := "navbar navbar-inverse navbar-fixed-top",
+      <.div(
+        ^.className := "ui fixed inverted menu",
         <.div(
-          ^.className := "container",
-          <.div(^.className := "navbar-header",
-                <.span(^.className := "navbar-brand", "peakid")),
-          <.div(^.className := "collapse navbar-collapse",
-                <.ul(^.className := "nav navbar-nav",
-                     menuItems.toTagMod(renderMenuItem(props) _)))
+          ^.className := "ui container",
+          <.div(^.className := "header item", "peakid"),
+          menuItems.toTagMod(renderMenuItem(props) _),
+          <.div(^.className := "right menu"),
+          <.a(^.className := "item",
+              ^.href := "https://github.com/toddburnside/peakid",
+              nameToIcon("github"),
+              "Source Code")
         )
       )
     }

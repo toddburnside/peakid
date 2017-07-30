@@ -26,14 +26,14 @@ object AppRouter {
     <.div(
       Navbar(c, r.page),
       <.div(
-        ^.className := "container",
+        ^.className := "ui grid container",
         <.div(
-          ^.className := "row",
-          <.div(^.className := "col-sm-3 col-md-2",
-                criteriaConnection(
-                  c => locationConnection(l => SearchCriteriaEntry(c, l)))),
-          <.div(^.className := "col-sm-9 col-md-10", r.render())
-        )
+          ^.className := "sixteen wide mobile five wide tablet three wide computer column",
+          criteriaConnection(
+            c => locationConnection(l => SearchCriteriaEntry(c, l)))),
+        <.div(
+          ^.className := "sixteen wide mobile eleven wide tablet ten wide computer column",
+          r.render())
       )
     )
   }
@@ -44,7 +44,7 @@ object AppRouter {
     val peakConnection = AppCircuit.connect(_.visiblePeaks)
 
     (trimSlashes
-      | staticRoute(root, PeakMapPage) ~> render(
+      | staticRoute("#map", PeakMapPage) ~> render(
         peakConnection(p => PeakMap(p)))
       | staticRoute("#list", PeakListPage) ~> render(
         peakConnection(p => PeakList(p))))

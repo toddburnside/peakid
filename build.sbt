@@ -27,8 +27,8 @@ val scalaJSDomVersion = "0.9.2" // only needed for AJAX calls
 val reactComponentsVersion = "0.6.0"
 
 val reactJSVersion = "15.5.4"
-val bootstrapVersion = "3.3.7"
-val jqueryVersion = "1.11.1"
+val semanticUIVersion = "2.2.7"
+val jqueryVersion = "3.2.1"
 
 lazy val root = project
   .in(file("."))
@@ -89,7 +89,7 @@ lazy val peakid = crossProject
       "org.webjars.npm" % "react" % reactJSVersion / "react-with-addons.js" commonJSName "React" minified "react-with-addons.min.js",
       "org.webjars.npm" % "react-dom" % reactJSVersion / "react-dom.js" commonJSName "ReactDOM" minified "react-dom.min.js" dependsOn "react-with-addons.js",
       "org.webjars" % "jquery" % jqueryVersion / "jquery.js" minified "jquery.min.js",
-      "org.webjars" % "bootstrap" % bootstrapVersion / "bootstrap.js" minified "bootstrap.min.js" dependsOn "jquery.js"
+      "org.webjars" % "Semantic-UI" % semanticUIVersion / "semantic.js" minified "semantic.min.js" dependsOn "jquery.js"
     ),
     skip in packageJSDependencies := false
     // This is for the scalajsbundler plugin, which I had some issues with...
