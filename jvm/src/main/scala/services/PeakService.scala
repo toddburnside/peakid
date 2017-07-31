@@ -12,8 +12,7 @@ import fs2.Task
 import fs2.interop.cats._
 import cats.data._, cats.implicits._
 
-class PeakService(val peakRepo: PeakRepository,
-                  elevProvider: ElevationProvider)
+class PeakService(val peakRepo: PeakRepository, elevProvider: ElevationProvider)
     extends BaseService {
   def service = HttpService {
     // get all the peaks theoretically visible from the location provided.
@@ -23,6 +22,7 @@ class PeakService(val peakRepo: PeakRepository,
       var peaksT: EitherT[Task, Throwable, Vector[VisiblePeak]] = for {
         // if the elevation was provided, convert to a Task[disjunction], else
         // if the elevation wasn't provided, go get it for the location.
+        // NOTE: provided elevation is expected to me in METERS. Need to make units consistent...
         elevation <- EitherT(
           optElev
             .map(e => Task.now(e.asRight))
