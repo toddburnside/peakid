@@ -2,7 +2,6 @@ import scala.scalajs.js.JSApp
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 import org.scalajs.dom
 import routes.AppRouter
-import services.{AppCircuit, GetCurrentLocation, RequestPeaks}
 import styles.AppStyles
 
 import scalacss.DevDefaults._
@@ -18,5 +17,6 @@ object ReactApp extends JSApp {
     ReactTable.DefaultStyle.addToDocument()
     Pager.DefaultStyle.addToDocument()
     AppRouter.router().renderIntoDOM(dom.document.getElementById("app"))
+    () // explicitly return unit to avoid discarded value compiler warning for above line.
   }
 }

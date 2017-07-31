@@ -115,7 +115,7 @@ lazy val peakidJVM = (peakid.jvm)
     watchSources ++= (watchSources in peakidJS).value
   )
 
-scalacOptions ++= Seq(
+scalacOptions in ThisBuild ++= Seq(
   "-deprecation",
   "-encoding",
   "UTF-8", // yes, this is 2 args

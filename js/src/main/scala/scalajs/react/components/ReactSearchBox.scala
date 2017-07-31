@@ -3,6 +3,7 @@ package scalajs.react.components
 import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 
+import scala.language.postfixOps
 import scala.scalajs.js
 import scalacss.ProdDefaults._
 import scalacss.ScalaCssReact._

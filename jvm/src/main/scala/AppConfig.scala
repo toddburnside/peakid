@@ -1,7 +1,5 @@
 package peakid
 
-import java.io.File
-
 import classy.config._
 import classy.DecodeError
 import classy.generic._

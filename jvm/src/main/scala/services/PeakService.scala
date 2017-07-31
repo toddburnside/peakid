@@ -3,7 +3,6 @@ package services
 import elevation.{ElevationInfo, ElevationProvider}
 import models.{Location3D, VisiblePeak}
 import io.circe.generic.auto._
-import models.PeakBase.NewPeak
 import org.http4s._
 import org.http4s.dsl._
 import repositories.{PeakInfo, PeakRepository}

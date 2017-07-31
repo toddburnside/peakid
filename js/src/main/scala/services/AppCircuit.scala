@@ -1,6 +1,6 @@
 package services
 
-import diode.{Action, ActionHandler, ActionResult, Circuit}
+import diode.{Action, ActionHandler, Circuit}
 import diode.data.PotState._
 import diode.data.{Empty, Pot, PotAction}
 import diode.react.ReactConnector
@@ -8,15 +8,14 @@ import models.{Location, VisiblePeak}
 import org.scalajs.dom.ext.Ajax
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.Future
 
 // The application model
 case class SearchCriteria(lon: Double, lat: Double, minElev: Int)
 case class VisiblePeaks(searchCriteria: SearchCriteria,
                         peaks: Pot[Seq[VisiblePeak]])
 
-case class RootModel(visiblePeaks: VisiblePeaks,
-                     currentLocation: Pot[Location])
+case class RootModel(visiblePeaks: VisiblePeaks, currentLocation: Pot[Location])
 
 // Actions
 case class UpdateSearchCriteria(searchCriteria: SearchCriteria) extends Action
@@ -93,7 +92,5 @@ object AppCircuit extends Circuit[RootModel] with ReactConnector[RootModel] {
   }
 
   override protected def actionHandler: AppCircuit.HandlerFunction =
-    composeHandlers(peaksHandler,
-                    currentLocationHandler,
-                    searchCriteriaHandler)
+    composeHandlers(peaksHandler, currentLocationHandler, searchCriteriaHandler)
 }

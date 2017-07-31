@@ -1,6 +1,5 @@
 package components
 
-import diode.data.Pot
 import diode.react.ModelProxy
 import diode.react.ReactPot._
 import japgolly.scalajs.react._

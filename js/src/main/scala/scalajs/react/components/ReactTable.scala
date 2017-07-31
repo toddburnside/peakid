@@ -4,6 +4,7 @@ import japgolly.scalajs.react._
 import japgolly.scalajs.react.vdom.html_<^._
 
 import scala.collection.immutable
+import scala.language.postfixOps
 import scala.scalajs.js.Date
 import scalacss.ProdDefaults._
 import scalacss.ScalaCssReact._
