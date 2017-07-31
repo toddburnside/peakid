@@ -14,7 +14,14 @@ object AppConfig {
   }
 }
 
+sealed trait ElevationProvider
+case class GoogleApi() extends ElevationProvider
+case class NationalMaps() extends ElevationProvider
+
 case class DB(driver: String, url: String, user: String, pass: String)
 case class Google(key: String)
 case class ServerConfig(port: Int, host: String)
-case class AppConfig(db: DB, google: Google, server: ServerConfig)
+case class AppConfig(db: DB,
+                     google: Google,
+                     elevationProvider: ElevationProvider,
+                     server: ServerConfig)

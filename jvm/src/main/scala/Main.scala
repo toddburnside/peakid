@@ -28,8 +28,11 @@ object Main extends ServerApp {
       xa <- newConnection(appConfig.db)
       peakRepo = new PeakRepositoryDb(xa)
       client = PooledHttp1Client()
-//      elevProvider = new GoogleElevationProvider(appConfig.google.key, client)
-      elevProvider = new NationalMapElevationProvider(client)
+      elevProvider = appConfig.elevationProvider match {
+        case GoogleApi() =>
+          new GoogleElevationProvider(appConfig.google.key, client)
+        case NationalMaps() => new NationalMapElevationProvider(client)
+      }
 
       service = Router(
         "/api" -> Router(
