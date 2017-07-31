@@ -2,6 +2,8 @@ name := "Peakid root project"
 scalaVersion in ThisBuild := "2.12.1"
 scalaOrganization in ThisBuild := "org.typelevel"
 
+import sbtcrossproject.{crossProject, CrossType}
+
 // Only necessary for SNAPSHOT releases
 resolvers += Resolver.sonatypeRepo("snapshots")
 
@@ -30,15 +32,15 @@ val reactJSVersion = "15.5.4"
 val semanticUIVersion = "2.2.7"
 val jqueryVersion = "3.2.1"
 
-lazy val root = project
-  .in(file("."))
-  .aggregate(peakidJS, peakidJVM)
-  .settings(
-    publish := {},
-    publishLocal := {}
-  )
+//lazy val root = project
+//  .in(file("."))
+//  .aggregate(peakidJS, peakidJVM)
+//  .settings(
+//    publish := {},
+//    publishLocal := {}
+//  )
 
-lazy val peakid = crossProject
+lazy val peakid = crossProject(JSPlatform, JVMPlatform)
   .in(file("."))
   .settings(
     name := "peakid",
