@@ -6,7 +6,7 @@ import services.{PeakService, ProfileService, StaticFileService}
 import fs2.Task
 import doobie.imports._
 import doobie.hikari.imports._
-import elevation.GoogleElevationProvider
+import elevation._
 import org.http4s.client.blaze.PooledHttp1Client
 import org.http4s.server.middleware.CORS
 import repositories.PeakRepositoryDb
@@ -28,7 +28,8 @@ object Main extends ServerApp {
       xa <- newConnection(appConfig.db)
       peakRepo = new PeakRepositoryDb(xa)
       client = PooledHttp1Client()
-      elevProvider = new GoogleElevationProvider(appConfig.google.key, client)
+//      elevProvider = new GoogleElevationProvider(appConfig.google.key, client)
+      elevProvider = new NationalMapElevationProvider(client)
 
       service = Router(
         "/api" -> Router(
