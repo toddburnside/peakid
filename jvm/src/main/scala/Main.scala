@@ -1,47 +1,56 @@
 package peakid
 
-import org.http4s.server.{Router, Server, ServerApp}
 import org.http4s.server.blaze.BlazeBuilder
 import services.{PeakService, ProfileService, StaticFileService}
-import fs2.Task
-import doobie.imports._
-import doobie.hikari.imports._
+import doobie.hikari._
 import elevation._
-import org.http4s.client.blaze.PooledHttp1Client
+import org.http4s.client.blaze.Http1Client
 import org.http4s.server.middleware.CORS
 import repositories.PeakRepositoryDb
+import cats.effect.{Effect, IO}
 import cats.implicits._
+import fs2.{Stream, StreamApp}
+import fs2.StreamApp.ExitCode
 
-object Main extends ServerApp {
+import scala.concurrent.ExecutionContext.Implicits.global
 
-  def server(args: List[String]): Task[Server] = {
+object Main extends HttpServer[IO]
+
+class HttpServer[F[_]: Effect] extends StreamApp[F] {
+  override def stream(args: List[String],
+                      requestShutdown: F[Unit]): Stream[F, ExitCode] = {
     AppConfig.load.fold(
-      error => Task.fail(new Exception(s"Configuration Error: ${error}")),
+      error =>
+        Stream.raiseError(new Exception(s"Configuration Error: ${error}")),
       config => createServer(config))
   }
 
-  def newConnection(db: DB): Task[Transactor[Task]] =
-    HikariTransactor[Task](db.driver, db.url, db.user, db.pass)
-
-  def createServer(appConfig: AppConfig): Task[Server] = {
+  def createServer(appConfig: AppConfig): Stream[F, ExitCode] = {
     for {
-      xa <- newConnection(appConfig.db)
+      // xa and client are created in Stream.brackets, so are self-cleaning.
+      xa <- HikariTransactor.stream(appConfig.db.driver,
+                                    appConfig.db.url,
+                                    appConfig.db.user,
+                                    appConfig.db.pass)
+      client <- Http1Client.stream()
+
       peakRepo = new PeakRepositoryDb(xa)
-      client = PooledHttp1Client()
       elevProvider = appConfig.elevationProvider match {
         case GoogleApi() =>
-          new GoogleElevationProvider(appConfig.google.key, client)
-        case NationalMaps() => new NationalMapElevationProvider(client)
+          new GoogleElevationProvider[F](appConfig.google.key, client)
+        case NationalMaps() => new NationalMapElevationProvider[F](client)
       }
 
-      service = Router(
-        "/api" -> Router(
-          "/peaks" -> (CORS(new PeakService(peakRepo, elevProvider).service)),
-          "/profiles" -> new ProfileService(elevProvider).service)) |+| StaticFileService.service
-      svr <- BlazeBuilder
+      peakSvc = CORS(new PeakService[F](peakRepo, elevProvider).service)
+      profileSvc = new ProfileService[F](elevProvider).service
+      staticSvc = new StaticFileService[F]().service
+
+      svr <- BlazeBuilder[F]
         .bindHttp(appConfig.server.port, appConfig.server.host)
-        .mountService(service, "/")
-        .start
+        .mountService(peakSvc, "/api/peaks")
+        .mountService(profileSvc, "/api/profiles")
+        .mountService(staticSvc, "/")
+        .serve
     } yield svr
   }
 }

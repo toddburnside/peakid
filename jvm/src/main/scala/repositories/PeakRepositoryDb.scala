@@ -1,23 +1,21 @@
 package repositories
 
+import cats.effect.Effect
 import dao.PeakDao
-import doobie.imports._
-
+import doobie._
+import doobie.implicits._
 import cats.implicits._
-import fs2.interop.cats._
-import models.PeakBase.{Peak, NewPeak}
+import models.PeakBase.{NewPeak, Peak}
 
-import fs2.Task
-
-class PeakRepositoryDb(val xa: Transactor[Task])
-    extends PeakRepository
+class PeakRepositoryDb[F[_]: Effect](val xa: Transactor[F])
+    extends PeakRepository[F]
     with PeakDao {
-  def findOne(id: Int) =
+  def findOne(id: Int): F[Either[Throwable, Option[Peak]]] =
     findOneQuery(id).option.attempt
       .transact(xa)
 
-  def find(minElev: Int) =
-    findQuery(minElev).process
+  def find(minElev: Int): fs2.Stream[F, Peak] =
+    findQuery(minElev).stream
       .transact(xa)
 
   def insert(newPeak: NewPeak) =

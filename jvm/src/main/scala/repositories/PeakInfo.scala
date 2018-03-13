@@ -2,24 +2,25 @@ package repositories
 
 import models.PeakBase.{NewPeak, Peak}
 import models.{Location3D, VisiblePeak}
-
-import fs2.{Task, Stream}
+import fs2.Stream
 import cats.data._
+import cats.implicits._
+import cats.effect.Effect
 
 object PeakInfo {
-  def find(minElev: Int): Reader[PeakRepository, Stream[Task, Peak]] =
+  def find[F[_]](minElev: Int): Reader[PeakRepository[F], Stream[F, Peak]] =
     Reader(_.find(minElev))
 
-  def findOne(
-      id: Int): Reader[PeakRepository, Task[Throwable Either Option[Peak]]] =
-    Reader(_.findOne(id))
+  def findOne[F[_]](
+      id: Int): Kleisli[F, PeakRepository[F], Throwable Either Option[Peak]] =
+    Kleisli(_.findOne(id))
 
-  def insert(
-      newPeak: NewPeak): Reader[PeakRepository, Task[Throwable Either Peak]] =
-    Reader(_.insert(newPeak))
+  def insert[F[_]](
+      newPeak: NewPeak): Kleisli[F, PeakRepository[F], Throwable Either Peak] =
+    Kleisli(_.insert(newPeak))
 
-  def findVisible(minElev: Int, loc: Location3D)
-    : Reader[PeakRepository, Task[Throwable Either Vector[VisiblePeak]]] = {
+  def findVisible[F[_]: Effect](minElev: Int, loc: Location3D)
+    : Reader[PeakRepository[F], F[Throwable Either Vector[VisiblePeak]]] = {
 
     // TODO: Handle units more consistently, these conversions DO NOT belong here
     // Problems are: db has elevation in feet, but need meters for calculations and
@@ -32,7 +33,7 @@ object PeakInfo {
     // get a list of peaks from the server as a process, then filter them, then put into a Vector,
     // then handle exceptions by 'attempt'ing them into a disjunction.
     for {
-      process <- find(minElev)
+      process <- find[F](minElev)
     } yield
       process
         .filter(elevFeetToMeters(_).isVisibleFrom(loc))
@@ -46,7 +47,8 @@ object PeakInfo {
                       dist,
                       peak.location)
         }
-        .runLog
+        .compile
+        .toVector
         .attempt // could just let http4s handle the exception
   }
 }

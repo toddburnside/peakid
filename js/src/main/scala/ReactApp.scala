@@ -1,4 +1,4 @@
-import scala.scalajs.js.JSApp
+//import scala.scalajs.js.JSApp
 import scala.scalajs.js.annotation.{JSExport, JSExportTopLevel}
 import org.scalajs.dom
 import routes.AppRouter
@@ -8,10 +8,10 @@ import scalacss.DevDefaults._
 import scalajs.react.components.{Pager, ReactTable}
 
 @JSExportTopLevel("hReactApp")
-object ReactApp extends JSApp {
+object ReactApp {
 
   @JSExport
-  def main(): Unit = {
+  def main(args: Array[String]): Unit = {
     // TODO: Use GlobalRegistry for CSS
     AppStyles.addToDocument()
     ReactTable.DefaultStyle.addToDocument()

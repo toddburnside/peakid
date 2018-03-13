@@ -1,42 +1,43 @@
 package services
 
+import cats._
 import elevation.{ElevationInfo, ElevationProvider}
 import models.{Location3D, VisiblePeak}
 import io.circe.generic.auto._
 import org.http4s._
-import org.http4s.dsl._
 import repositories.{PeakInfo, PeakRepository}
+import cats.data.EitherT
+import cats.effect.Effect
+import cats.implicits._
 
-import fs2.Task
-import fs2.interop.cats._
-import cats.data._, cats.implicits._
-
-class PeakService(val peakRepo: PeakRepository, elevProvider: ElevationProvider)
-    extends BaseService {
-  def service = HttpService {
+class PeakService[F[_]: Effect](val peakRepo: PeakRepository[F],
+                                elevProvider: ElevationProvider[F])
+    extends BaseService[F] {
+  def service: HttpService[F] = HttpService[F] {
     // get all the peaks theoretically visible from the location provided.
     case GET -> Root :? LonMatcher(lon) +& LatMatcher(lat)
           +& OptElevMatcher(optElev) +& OptMinElevMatcher(optMinElev) => {
-      // work inside EitherT so we can make use of the elevation easily
-      var peaksT: EitherT[Task, Throwable, Vector[VisiblePeak]] = for {
-        // if the elevation was provided, convert to a Task[disjunction], else
-        // if the elevation wasn't provided, go get it for the location.
-        // NOTE: provided elevation is expected to me in METERS. Need to make units consistent...
-        elevation <- EitherT(
-          optElev
-            .map(e => Task.now(e.asRight))
-            .getOrElse(ElevationInfo.getElevation(lon, lat).run(elevProvider)))
 
-        // the mininum elevation of the peaks to include in the result
+      // if the elevation was provided, convert to a F[Either[Throwable, Int], else
+      // if the elevation wasn't provided, go get it for the location.
+      val fEitherElev = optElev
+        .map(e => Applicative[F].pure(e.asRight[Throwable]))
+        .getOrElse(ElevationInfo.getElevation[F](lon, lat).run(elevProvider))
+
+      // work inside EitherT so we can make use of the elevation easily
+      val peaksT: EitherT[F, Throwable, Vector[VisiblePeak]] = for {
+        elevation <- EitherT[F, Throwable, Int](fEitherElev)
+
+        // the minimum elevation of the peaks to include in the result - default to zero
         minElev = optMinElev.getOrElse(0)
 
         peaks <- EitherT(
           PeakInfo
-            .findVisible(minElev, Location3D(lon, lat, elevation))
+            .findVisible[F](minElev, Location3D(lon, lat, elevation))
             .run(peakRepo))
       } yield peaks
 
-      // Extract the Task[\/] and convert to a response
+      // Extract the Task[Either] and convert to a response
       peaksT.value.flatMap(p => eitherToResponse(p)(Ok(_)))
     }
 

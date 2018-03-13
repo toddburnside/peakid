@@ -1,7 +1,8 @@
 package dao
 
-import doobie.imports._
-import doobie.postgres.pgistypes.PointType
+import doobie._
+import doobie.implicits._
+import doobie.postgres.pgisimplicits.PointType
 import models.Location
 import models.PeakBase.{NewPeak, Peak}
 import org.postgis.Point
@@ -9,7 +10,7 @@ import org.postgis.Point
 trait PeakDao {
   implicit val locationMeta: Meta[Location] =
     Meta[Point]
-      .nxmap(p => new Location(p.x, p.y), l => new Point(l.lon, l.lat))
+      .xmap(p => new Location(p.x, p.y), l => new Point(l.lon, l.lat))
 
   // TODO: Limit the results on the server side using GIS stuff.
   def findOneQuery(id: Int): Query0[Peak] =

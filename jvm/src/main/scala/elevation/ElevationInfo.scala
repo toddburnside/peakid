@@ -1,12 +1,11 @@
 package elevation
 
 import cats.data._
-import fs2.Task
 
 object ElevationInfo {
   // TODO: Handle errors - including empty result list
-  def getElevation(
+  def getElevation[F[_]](
       lon: Double,
-      lat: Double): Reader[ElevationProvider, Task[Throwable Either Int]] =
-    Reader(_.getElevation(lon, lat))
+      lat: Double): Kleisli[F, ElevationProvider[F], Throwable Either Int] =
+    Kleisli(_.getElevation(lon, lat))
 }
